@@ -16,8 +16,8 @@
 			membershipExceptions = (
 				Actions.sks,
 				Assets.xcassets,
-				GameScene.sks,
 				GameScene.swift,
+				MainCharacter.swift,
 			);
 			target = B1BC50742E6E3F2700854569 /* RushDefense iOS */;
 		};
