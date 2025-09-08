@@ -57,6 +57,15 @@ class MainCharacter: SKNode {
             sprite.size = t.size()
         }
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+
+        // Physics: circle with diameter = 2/3 of texture width
+        if let w = initialTexture?.size().width {
+            let radius = (w * (2.0 / 3.0)) * 0.5
+            self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
+            self.physicsBody?.isDynamic = true
+            self.physicsBody?.affectedByGravity = false
+            self.physicsBody?.allowsRotation = false
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -88,6 +97,43 @@ class MainCharacter: SKNode {
             completion?()
         }
         let seq = SKAction.sequence([move, finish])
+        run(seq, withKey: "move")
+    }
+
+    /// Follow a series of waypoints with walking animation.
+    /// - Parameters:
+    ///   - points: Waypoints in parent coordinates, in order.
+    ///   - completion: Called after arriving at the final point.
+    func walkPath(_ points: [CGPoint], completion: (() -> Void)? = nil) {
+        guard !points.isEmpty else { completion?(); return }
+        removeAction(forKey: "move")
+
+        var actions: [SKAction] = []
+        var last = position
+        for p in points {
+            let delta = CGVector(dx: p.x - last.x, dy: p.y - last.y)
+            let distance = hypot(delta.dx, delta.dy)
+            guard distance > 0.5 else { continue }
+            let angle = atan2(delta.dy, delta.dx)
+            // Update facing and restart walking frames for this segment
+            actions.append(SKAction.run { [weak self] in
+                guard let self = self else { return }
+                self.currentAngle = angle
+                self.sprite.xScale = (angle + .pi).truncatingRemainder(dividingBy: .pi) < .pi / 2 ? -1 : 1
+                self.startWalkAnimation()
+            })
+            let duration = TimeInterval(distance / max(1, walkSpeed))
+            actions.append(SKAction.move(to: p, duration: duration))
+            last = p
+        }
+
+        guard !actions.isEmpty else { completion?(); return }
+
+        let finish = SKAction.run { [weak self] in
+            self?.stopWalkingAnimation()
+            completion?()
+        }
+        let seq = SKAction.sequence(actions + [finish])
         run(seq, withKey: "move")
     }
 

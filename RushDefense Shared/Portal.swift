@@ -43,6 +43,15 @@ class Portal: SKNode {
             sprite.size = t.size()
         }
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+
+        // Physics: circle with diameter = 2/3 of texture width
+        if let w = initialTexture?.size().width {
+            let radius = (w * (2.0 / 3.0)) * 0.5
+            self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
+            self.physicsBody?.isDynamic = false
+            self.physicsBody?.affectedByGravity = false
+            self.physicsBody?.allowsRotation = false
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
