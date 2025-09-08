@@ -21,7 +21,7 @@ enum PortalTexture: TextureSheetProvider {
 }
 
 /// Portal node that can play a spawn sequence then loop idle.
-class Portal: SKNode {
+class Portal: SKNode, Obstacle {
     // MARK: - Configuration
     /// Time per animation frame.
     var timePerFrame: TimeInterval = 0.12
@@ -43,15 +43,6 @@ class Portal: SKNode {
             sprite.size = t.size()
         }
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-
-        // Physics: circle with diameter = 2/3 of texture width
-        if let w = initialTexture?.size().width {
-            let radius = (w * (2.0 / 3.0)) * 0.5
-            self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
-            self.physicsBody?.isDynamic = false
-            self.physicsBody?.affectedByGravity = false
-            self.physicsBody?.allowsRotation = false
-        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -80,5 +71,10 @@ class Portal: SKNode {
         }
         let sequence = SKAction.sequence([start, beginIdle])
         sprite.run(sequence, withKey: "portal_spawn")
+    }
+
+    // MARK: - Obstacle
+    var obstacleRect: CGRect {
+        CGRect(center: CGPoint(x: 0, y: -10), size: CGSize(width: 60, height: 36))
     }
 }

@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B17218272E6EA7F6000F45FA /* BaseToolbox in Frameworks */ = {isa = PBXBuildFile; productRef = B17218262E6EA7F6000F45FA /* BaseToolbox */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		B17218242E6EA7F0000F45FA /* BaseToolbox */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BaseToolbox; path = ../BaseToolbox; sourceTree = SOURCE_ROOT; };
 		B1BC50752E6E3F2700854569 /* RushDefense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RushDefense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -28,18 +33,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B17218272E6EA7F6000F45FA /* BaseToolbox in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B17218252E6EA7F6000F45FA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B1BC50672E6E3F2600854569 = {
 			isa = PBXGroup;
 			children = (
 				B17218162E6E90D4000F45FA /* RushDefense Shared */,
 				B1BC50772E6E3F2700854569 /* RushDefense iOS */,
 				B1BC50762E6E3F2700854569 /* Products */,
+				B17218242E6EA7F0000F45FA /* BaseToolbox */,
+				B17218252E6EA7F6000F45FA /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -72,6 +87,7 @@
 			);
 			name = "RushDefense iOS";
 			packageProductDependencies = (
+				B17218262E6EA7F6000F45FA /* BaseToolbox */,
 			);
 			productName = "RushDefense iOS";
 			productReference = B1BC50752E6E3F2700854569 /* RushDefense.app */;
@@ -339,6 +355,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B17218262E6EA7F6000F45FA /* BaseToolbox */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BaseToolbox;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B1BC50682E6E3F2600854569 /* Project object */;
 }

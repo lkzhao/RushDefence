@@ -45,6 +45,10 @@ class MainCharacter: SKNode {
     private let container = SKNode()
     private let sprite = SKSpriteNode()
     private var currentAngle: CGFloat = 0 // Radians
+    private var waypoints: [CGPoint] = []
+    private var arrivalCompletion: (() -> Void)?
+    private var frameIndex: Int = 0
+    private var frameTimer: TimeInterval = 0
 
     // MARK: - Lifecycle
     override init() {
@@ -58,14 +62,7 @@ class MainCharacter: SKNode {
         }
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
 
-        // Physics: circle with diameter = 2/3 of texture width
-        if let w = initialTexture?.size().width {
-            let radius = (w * (2.0 / 3.0)) * 0.5
-            self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
-            self.physicsBody?.isDynamic = true
-            self.physicsBody?.affectedByGravity = false
-            self.physicsBody?.allowsRotation = false
-        }
+        // No physics body; obstacle avoidance uses custom protocol and GameplayKit
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -74,87 +71,83 @@ class MainCharacter: SKNode {
     }
 
     // MARK: - Public API
-    /// Move to a location with walking animation. Animation frames are selected
-    /// based on the movement angle and rotated in 90° steps to match facing.
-    /// - Parameters:
-    ///   - location: Target position in parent coordinates.
-    ///   - completion: Called after arriving.
-    func walkTo(_ location: CGPoint, completion: (() -> Void)? = nil) {
-        let delta = CGVector(dx: location.x - position.x, dy: location.y - position.y)
-        let distance = hypot(delta.dx, delta.dy)
-        guard distance > 0.5 else { completion?(); return }
-
-        currentAngle = atan2(delta.dy, delta.dx)
-        print(currentAngle, MainCharacterTexture(angle: currentAngle))
-        sprite.xScale = (currentAngle + .pi).truncatingRemainder(dividingBy: .pi) < .pi / 2 ? -1 : 1
-
-        let duration = TimeInterval(distance / max(1, walkSpeed))
-        let move = SKAction.move(to: location, duration: duration)
-        startWalkAnimation()
-
-        let finish = SKAction.run { [weak self] in
-            self?.stopWalkingAnimation()
-            completion?()
-        }
-        let seq = SKAction.sequence([move, finish])
-        run(seq, withKey: "move")
-    }
+    // Convenience removed: call walkPath([point]) instead of walkTo
 
     /// Follow a series of waypoints with walking animation.
     /// - Parameters:
     ///   - points: Waypoints in parent coordinates, in order.
     ///   - completion: Called after arriving at the final point.
     func walkPath(_ points: [CGPoint], completion: (() -> Void)? = nil) {
-        guard !points.isEmpty else { completion?(); return }
-        removeAction(forKey: "move")
-
-        var actions: [SKAction] = []
-        var last = position
-        for p in points {
-            let delta = CGVector(dx: p.x - last.x, dy: p.y - last.y)
-            let distance = hypot(delta.dx, delta.dy)
-            guard distance > 0.5 else { continue }
-            let angle = atan2(delta.dy, delta.dx)
-            // Update facing and restart walking frames for this segment
-            actions.append(SKAction.run { [weak self] in
-                guard let self = self else { return }
-                self.currentAngle = angle
-                self.sprite.xScale = (angle + .pi).truncatingRemainder(dividingBy: .pi) < .pi / 2 ? -1 : 1
-                self.startWalkAnimation()
-            })
-            let duration = TimeInterval(distance / max(1, walkSpeed))
-            actions.append(SKAction.move(to: p, duration: duration))
-            last = p
-        }
-
-        guard !actions.isEmpty else { completion?(); return }
-
-        let finish = SKAction.run { [weak self] in
-            self?.stopWalkingAnimation()
-            completion?()
-        }
-        let seq = SKAction.sequence(actions + [finish])
-        run(seq, withKey: "move")
-    }
-
-    /// Immediately stops movement and animation.
-    func stop() {
-        removeAction(forKey: "move")
-        stopWalkingAnimation()
+        waypoints = points
+        arrivalCompletion = completion
     }
 
     // MARK: - Facing & Animation
-    private func startWalkAnimation() {
-        sprite.removeAction(forKey: "walkAnim")
-        let frames = MainCharacterTexture(angle: currentAngle).textures
-        sprite.texture = frames.first
-        let animate = SKAction.animate(with: frames, timePerFrame: timePerFrame, resize: false, restore: false)
-        let loop = SKAction.repeatForever(animate)
-        sprite.run(loop, withKey: "walkAnim")
-    }
 
-    private func stopWalkingAnimation() {
-        sprite.removeAction(forKey: "walkAnim")
-        sprite.texture = MainCharacterTexture(angle: currentAngle).textures.first
+    // MARK: - Per-frame update
+    func update(deltaTime dt: TimeInterval) {
+        var movedThisFrame = false
+        if !waypoints.isEmpty {
+            let maxDistance = CGFloat(dt) * max(1, walkSpeed)
+
+            var remaining = maxDistance
+            while remaining > 0, let target = waypoints.first {
+                let dx = target.x - position.x
+                let dy = target.y - position.y
+                let dist = hypot(dx, dy)
+                if dist <= 0.5 {
+                    // Arrived at this waypoint
+                    waypoints.removeFirst()
+                    continue
+                }
+
+                // Update facing continually based on movement vector
+                currentAngle = atan2(dy, dx)
+                sprite.xScale = (currentAngle + .pi).truncatingRemainder(dividingBy: .pi) < .pi / 2 ? -1 : 1
+
+                if remaining >= dist {
+                    position = target
+                    waypoints.removeFirst()
+                    remaining -= dist
+                    movedThisFrame = true
+                } else {
+                    let ux = dx / dist
+                    let uy = dy / dist
+                    position.x += ux * remaining
+                    position.y += uy * remaining
+                    remaining = 0
+                    movedThisFrame = true
+                }
+            }
+        }
+
+        if movedThisFrame {
+            // Advance manual walk animation frames
+            frameTimer += dt
+            while frameTimer >= timePerFrame {
+                frameTimer -= timePerFrame
+                frameIndex = (frameIndex + 1) % 4 // loop 0..3
+                let frames = MainCharacterTexture(angle: currentAngle).textures
+                if frames.indices.contains(frameIndex) {
+                    sprite.texture = frames[frameIndex]
+                } else if let first = frames.first {
+                    frameIndex = 0
+                    sprite.texture = first
+                }
+            }
+        }
+
+        if waypoints.isEmpty {
+            // Reset to first frame when not moving
+            if movedThisFrame {
+                frameIndex = 0
+            }
+            sprite.texture = MainCharacterTexture(angle: currentAngle).textures.first
+            if arrivalCompletion != nil {
+                let done = arrivalCompletion
+                arrivalCompletion = nil
+                done?()
+            }
+        }
     }
 }

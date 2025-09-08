@@ -13,6 +13,7 @@ class GameScene: SKScene {
     private let hero = MainCharacter()
     private var portal: Portal!
     private var altar: Altar!
+    private var lastUpdateTime: TimeInterval = 0
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -77,6 +78,21 @@ extension GameScene {
         routeHero(to: location)
     }
 }
+
+// MARK: - Frame Update
+extension GameScene {
+    override func update(_ currentTime: TimeInterval) {
+        if lastUpdateTime == 0 {
+            lastUpdateTime = currentTime
+        }
+        var dt = currentTime - lastUpdateTime
+        lastUpdateTime = currentTime
+        // Clamp dt to avoid large jumps on resume
+        if dt.isNaN || dt.isInfinite { dt = 1.0 / 60.0 }
+        dt = min(max(dt, 0), 0.1)
+        hero.update(deltaTime: dt)
+    }
+}
 #endif
 
 #if os(OSX)
@@ -93,7 +109,7 @@ extension GameScene {
     private func routeHero(to destination: CGPoint) {
         let path = planPath(from: hero.position, to: destination)
         if path.isEmpty {
-            hero.walkTo(destination)
+            hero.walkPath([destination])
         } else {
             hero.walkPath(path)
         }
@@ -101,31 +117,74 @@ extension GameScene {
 
     private func planPath(from start: CGPoint, to end: CGPoint) -> [CGPoint] {
         // Build obstacles directly from SpriteKit physics bodies
-        let obstacleNodes: [SKNode] = [portal as SKNode?, altar as SKNode?].compactMap { $0 }
-        let obstacles: [GKPolygonObstacle] = SKNode.obstacles(fromNodePhysicsBodies: obstacleNodes)
+        // Build rectangular obstacle descriptors from nodes conforming to Obstacle
+        let obstacleNodes: [SKNode & Obstacle] = children.compactMap { $0 as? (SKNode & Obstacle) }.filter { $0 != hero }
+        let rectsScene: [CGRect] = obstacleNodes.compactMap { node in
+            node.obstacleRect + node.position
+        }
 
-        // Buffer based on the hero's physics radius (width / 3)
-        let heroWidth = hero.calculateAccumulatedFrame().width
-        let heroRadius = Float(max(1.0, heroWidth / 3.0))
+        // Hero radius used for buffer clearance
+        let heroRadius = max(1.0, hero.calculateAccumulatedFrame().width / 3.0)
 
-        let graph = GKObstacleGraph(obstacles: obstacles, bufferRadius: heroRadius)
+        // Clamp destination if inside any obstacle expanded by hero radius
+//        var adjustedEnd = end
+//        var didAdjust = false
+//        for rect in rectsScene {
+//            let inflated = rect.insetBy(dx: -heroRadius, dy: -heroRadius)
+//            if inflated.contains(adjustedEnd) {
+//                let dl = adjustedEnd.x - inflated.minX
+//                let dr = inflated.maxX - adjustedEnd.x
+//                let db = adjustedEnd.y - inflated.minY
+//                let dt = inflated.maxY - adjustedEnd.y
+//                let m1 = min(dl, dr)
+//                let m2 = min(db, dt)
+//                if m1 <= m2 {
+//                    // Move to left or right edge
+//                    adjustedEnd.x = (dl <= dr) ? inflated.minX : inflated.maxX
+//                } else {
+//                    // Move to bottom or top edge
+//                    adjustedEnd.y = (db <= dt) ? inflated.minY : inflated.maxY
+//                }
+//                didAdjust = true
+//            }
+//        }
 
-        let startNode = GKGraphNode2D(point: vector_float2(Float(start.x), Float(start.y)))
-        let endNode = GKGraphNode2D(point: vector_float2(Float(end.x), Float(end.y)))
+        let obstacles: [GKPolygonObstacle] = rectsScene.map { rect in
+            .init(rect: rect)
+        }
+        let graph = GKObstacleGraph(obstacles: obstacles, bufferRadius: Float(heroRadius))
+
+        let startNode = GKGraphNode2D(point: start.float2)
+        let endNode = GKGraphNode2D(point: end.float2)
 
         graph.connectUsingObstacles(node: startNode)
         graph.connectUsingObstacles(node: endNode)
 
-        let nodes = graph.findPath(from: startNode, to: endNode) as? [GKGraphNode2D] ?? []
+        let nodes = graph.findPath(from: startNode, to: endNode) as! [GKGraphNode2D]
+        return nodes.map { $0.point }
+    }
+}
 
-        // Cleanup temporary nodes
-        graph.remove([startNode, endNode])
+extension GKPolygonObstacle {
+    convenience init(rect: CGRect) {
+        let pts: [SIMD2<Float>] = [
+            rect.topLeft.float2,
+            rect.topRight.float2,
+            rect.bottomRight.float2,
+            rect.bottomLeft.float2,
+        ]
+        self.init(points: pts)
+    }
+}
 
-        // Convert path nodes to CGPoints, dropping the first if it's too close to start
-        var points: [CGPoint] = nodes.map { CGPoint(x: CGFloat($0.position.x), y: CGFloat($0.position.y)) }
-        if let first = points.first, hypot(first.x - start.x, first.y - start.y) < 1 {
-            points.removeFirst()
-        }
-        return points
+extension CGPoint {
+    var float2: SIMD2<Float> {
+        SIMD2<Float>(Float(x), Float(y))
+    }
+}
+
+extension GKGraphNode2D {
+    var point: CGPoint {
+        CGPoint(x: CGFloat(position.x), y: CGFloat(position.y))
     }
 }
