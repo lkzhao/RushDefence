@@ -35,13 +35,12 @@ class GameScene: SKScene {
 
         // Hero
         addChild(hero)
-        hero.zPosition = 1
-        hero.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        hero.zPosition = 3
+        hero.position = map.position + CGPoint(x: 0, y: -50)
 
-        // Portal: place at random location on the map, spawn after delay
+        // Portal: place at random location on the map
         let portal = Portal()
         self.portal = portal
-        portal.zPosition = 0
         addChild(portal)
         // Compute random position within tile map bounds
         let mapSize = map.tileMap.mapSize
@@ -51,17 +50,18 @@ class GameScene: SKScene {
         let randY = CGFloat.random(in: -halfH...halfH) + map.position.y
         portal.position = CGPoint(x: randX, y: randY)
 
-        let wait = SKAction.wait(forDuration: 2.0)
-        let doSpawn = SKAction.run { [weak portal] in portal?.spawn() }
-        portal.run(.sequence([wait, doSpawn]))
-
-        // Altar: place at center of the map and spawn immediately
+        // Altar: place at center of the map
         let altar = Altar()
         self.altar = altar
-        altar.zPosition = 0
         addChild(altar)
         altar.position = map.position
-        altar.spawn()
+
+        let wait = SKAction.wait(forDuration: 2.0)
+        let doSpawn = SKAction.run {
+            portal.spawn()
+            altar.spawn()
+        }
+        portal.run(.sequence([wait, doSpawn]))
     }
 }
 
@@ -91,6 +91,11 @@ extension GameScene {
         if dt.isNaN || dt.isInfinite { dt = 1.0 / 60.0 }
         dt = min(max(dt, 0), 0.1)
         hero.update(deltaTime: dt)
+
+        // Dynamic z-ordering: bring obstacles in front when hero is below them
+        for node in children.compactMap({ $0 as? SKNode & Obstacle }) {
+            node.zPosition = hero.position.y < node.position.y ? 2 : 4
+        }
     }
 }
 #endif
@@ -116,42 +121,13 @@ extension GameScene {
     }
 
     private func planPath(from start: CGPoint, to end: CGPoint) -> [CGPoint] {
-        // Build obstacles directly from SpriteKit physics bodies
-        // Build rectangular obstacle descriptors from nodes conforming to Obstacle
-        let obstacleNodes: [SKNode & Obstacle] = children.compactMap { $0 as? (SKNode & Obstacle) }.filter { $0 != hero }
+        let obstacleNodes: [SKNode & Obstacle] = children.compactMap { $0 as? (SKNode & Obstacle) }
         let rectsScene: [CGRect] = obstacleNodes.compactMap { node in
             node.obstacleRect + node.position
         }
 
-        // Hero radius used for buffer clearance
         let heroRadius = max(1.0, hero.calculateAccumulatedFrame().width / 3.0)
-
-        // Clamp destination if inside any obstacle expanded by hero radius
-//        var adjustedEnd = end
-//        var didAdjust = false
-//        for rect in rectsScene {
-//            let inflated = rect.insetBy(dx: -heroRadius, dy: -heroRadius)
-//            if inflated.contains(adjustedEnd) {
-//                let dl = adjustedEnd.x - inflated.minX
-//                let dr = inflated.maxX - adjustedEnd.x
-//                let db = adjustedEnd.y - inflated.minY
-//                let dt = inflated.maxY - adjustedEnd.y
-//                let m1 = min(dl, dr)
-//                let m2 = min(db, dt)
-//                if m1 <= m2 {
-//                    // Move to left or right edge
-//                    adjustedEnd.x = (dl <= dr) ? inflated.minX : inflated.maxX
-//                } else {
-//                    // Move to bottom or top edge
-//                    adjustedEnd.y = (db <= dt) ? inflated.minY : inflated.maxY
-//                }
-//                didAdjust = true
-//            }
-//        }
-
-        let obstacles: [GKPolygonObstacle] = rectsScene.map { rect in
-            .init(rect: rect)
-        }
+        let obstacles: [GKPolygonObstacle] = rectsScene.map { .init(rect: $0) }
         let graph = GKObstacleGraph(obstacles: obstacles, bufferRadius: Float(heroRadius))
 
         let startNode = GKGraphNode2D(point: start.float2)

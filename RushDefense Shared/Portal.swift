@@ -75,6 +75,6 @@ class Portal: SKNode, Obstacle {
 
     // MARK: - Obstacle
     var obstacleRect: CGRect {
-        CGRect(center: CGPoint(x: 0, y: -10), size: CGSize(width: 60, height: 36))
+        CGRect(center: CGPoint(x: 0, y: -14), size: CGSize(width: 68, height: 30))
     }
 }
