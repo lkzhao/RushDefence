@@ -18,6 +18,8 @@
 				Assets.xcassets,
 				GameScene.swift,
 				MainCharacter.swift,
+				Map.swift,
+				MapTileSet.sks,
 			);
 			target = B1BC50742E6E3F2700854569 /* RushDefense iOS */;
 		};

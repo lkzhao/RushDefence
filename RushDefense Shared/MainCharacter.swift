@@ -8,7 +8,7 @@
 import Foundation
 import SpriteKit
 
-enum Texture {
+enum MainCharacterTexture {
     case walk1, walk2, walk3
 
     private struct Sheets {
@@ -80,7 +80,7 @@ class MainCharacter: SKNode {
         super.init()
         addChild(container)
         container.addChild(sprite)
-        sprite.texture = Texture.walk1.textures.first
+        sprite.texture = MainCharacterTexture.walk1.textures.first
         sprite.size = CGSize(width: 48, height: 48)
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     }
@@ -102,7 +102,7 @@ class MainCharacter: SKNode {
         guard distance > 0.5 else { completion?(); return }
 
         currentAngle = atan2(delta.dy, delta.dx)
-        print(currentAngle, Texture(angle: currentAngle))
+        print(currentAngle, MainCharacterTexture(angle: currentAngle))
         sprite.xScale = (currentAngle + .pi).truncatingRemainder(dividingBy: .pi) < .pi / 2 ? -1 : 1
 
         let duration = TimeInterval(distance / max(1, walkSpeed))
@@ -126,7 +126,7 @@ class MainCharacter: SKNode {
     // MARK: - Facing & Animation
     private func startWalkAnimation() {
         sprite.removeAction(forKey: "walkAnim")
-        let frames = Texture(angle: currentAngle).textures
+        let frames = MainCharacterTexture(angle: currentAngle).textures
         sprite.texture = frames.first
         let animate = SKAction.animate(with: frames, timePerFrame: timePerFrame, resize: false, restore: false)
         let loop = SKAction.repeatForever(animate)
@@ -135,6 +135,6 @@ class MainCharacter: SKNode {
 
     private func stopWalkingAnimation() {
         sprite.removeAction(forKey: "walkAnim")
-        sprite.texture = Texture(angle: currentAngle).textures.first
+        sprite.texture = MainCharacterTexture(angle: currentAngle).textures.first
     }
 }

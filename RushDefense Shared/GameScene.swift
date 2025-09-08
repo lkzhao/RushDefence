@@ -8,6 +8,7 @@
 import SpriteKit
 
 class GameScene: SKScene {
+    private var map: Map!
     private let hero = MainCharacter()
 
     override init(size: CGSize) {
@@ -22,7 +23,15 @@ class GameScene: SKScene {
 
     private func commonInit() {
         scaleMode = .aspectFill
+        // Map behind hero
+        map = Map(sizeInPoints: size)
+        map.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        map.zPosition = -1
+        addChild(map)
+
+        // Hero
         addChild(hero)
+        hero.zPosition = 1
         hero.position = CGPoint(x: size.width / 2, y: size.height / 2)
     }
 }
