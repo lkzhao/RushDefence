@@ -10,27 +10,9 @@
 		B1BC50752E6E3F2700854569 /* RushDefense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RushDefense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B1BC50862E6E3F2700854569 /* Exceptions for "RushDefense Shared" folder in "RushDefense iOS" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Actions.sks,
-				Assets.xcassets,
-				GameScene.swift,
-				MainCharacter.swift,
-				Map.swift,
-				MapTileSet.sks,
-			);
-			target = B1BC50742E6E3F2700854569 /* RushDefense iOS */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B1BC506C2E6E3F2600854569 /* RushDefense Shared */ = {
+		B17218162E6E90D4000F45FA /* RushDefense Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				B1BC50862E6E3F2700854569 /* Exceptions for "RushDefense Shared" folder in "RushDefense iOS" target */,
-			);
 			path = "RushDefense Shared";
 			sourceTree = "<group>";
 		};
@@ -55,7 +37,7 @@
 		B1BC50672E6E3F2600854569 = {
 			isa = PBXGroup;
 			children = (
-				B1BC506C2E6E3F2600854569 /* RushDefense Shared */,
+				B17218162E6E90D4000F45FA /* RushDefense Shared */,
 				B1BC50772E6E3F2700854569 /* RushDefense iOS */,
 				B1BC50762E6E3F2700854569 /* Products */,
 			);
@@ -85,6 +67,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				B17218162E6E90D4000F45FA /* RushDefense Shared */,
 				B1BC50772E6E3F2700854569 /* RushDefense iOS */,
 			);
 			name = "RushDefense iOS";

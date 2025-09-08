@@ -33,6 +33,22 @@ class GameScene: SKScene {
         addChild(hero)
         hero.zPosition = 1
         hero.position = CGPoint(x: size.width / 2, y: size.height / 2)
+
+        // Portal: place at random location on the map, spawn after delay
+        let portal = Portal()
+        portal.zPosition = 0
+        addChild(portal)
+        // Compute random position within tile map bounds
+        let mapSize = map.tileMap.mapSize
+        let halfW = mapSize.width / 2
+        let halfH = mapSize.height / 2
+        let randX = CGFloat.random(in: -halfW...halfW) + map.position.x
+        let randY = CGFloat.random(in: -halfH...halfH) + map.position.y
+        portal.position = CGPoint(x: randX, y: randY)
+
+        let wait = SKAction.wait(forDuration: 2.0)
+        let doSpawn = SKAction.run { [weak portal] in portal?.spawn() }
+        portal.run(.sequence([wait, doSpawn]))
     }
 }
 

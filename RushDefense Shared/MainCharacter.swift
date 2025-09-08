@@ -8,43 +8,14 @@
 import Foundation
 import SpriteKit
 
-enum MainCharacterTexture {
+enum MainCharacterTexture: TextureSheetProvider {
     case walk1, walk2, walk3
 
-    private struct Sheets {
-        let walk1: [SKTexture] // 0
-        let walk2: [SKTexture] // .pi / 8
-        let walk3: [SKTexture] // .pi / 4
-    }
-
-    private static let sheets: Sheets = {
-        func slice(_ base: SKTexture, columns: Int) -> [SKTexture] {
-            let count = columns
-            return (0..<count).map { i in
-                let w = 1.0 / CGFloat(count)
-                let rect = CGRect(x: CGFloat(i) * w, y: 0, width: w, height: 1)
-                return SKTexture(rect: rect, in: base)
-            }
-        }
-
-        let t1 = SKTexture(imageNamed: "Walk1")
-        let t2 = SKTexture(imageNamed: "Walk2")
-        let t3 = SKTexture(imageNamed: "Walk3")
-        t1.filteringMode = .nearest
-        t2.filteringMode = .nearest
-        t3.filteringMode = .nearest
-        return Sheets(
-            walk1: slice(t1, columns: 4),
-            walk2: slice(t2, columns: 4),
-            walk3: slice(t3, columns: 4)
-        )
-    }()
-
-    var textures: [SKTexture] {
+    var assetName: String {
         switch self {
-        case .walk1: return Self.sheets.walk1
-        case .walk2: return Self.sheets.walk2
-        case .walk3: return Self.sheets.walk3
+        case .walk1: return "Walk1"
+        case .walk2: return "Walk2"
+        case .walk3: return "Walk3"
         }
     }
 
