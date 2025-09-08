@@ -51,8 +51,11 @@ class MainCharacter: SKNode {
         super.init()
         addChild(container)
         container.addChild(sprite)
-        sprite.texture = MainCharacterTexture.walk1.textures.first
-        sprite.size = CGSize(width: 48, height: 48)
+        let initialTexture = MainCharacterTexture.walk1.textures.first
+        sprite.texture = initialTexture
+        if let t = initialTexture {
+            sprite.size = t.size()
+        }
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     }
 

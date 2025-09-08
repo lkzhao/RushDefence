@@ -49,6 +49,13 @@ class GameScene: SKScene {
         let wait = SKAction.wait(forDuration: 2.0)
         let doSpawn = SKAction.run { [weak portal] in portal?.spawn() }
         portal.run(.sequence([wait, doSpawn]))
+
+        // Altar: place at center of the map and spawn immediately
+        let altar = Altar()
+        altar.zPosition = 0
+        addChild(altar)
+        altar.position = map.position
+        altar.spawn()
     }
 }
 
