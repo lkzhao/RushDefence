@@ -7,6 +7,8 @@
 
 import UIKit
 @_exported import BaseToolbox
+@_exported import GameplayKit
+@_exported import SceneKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {

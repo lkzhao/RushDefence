@@ -10,10 +10,10 @@ import GameplayKit
 
 class GameScene: SKScene {
     private var map: Map!
-    private let hero = MainCharacter()
     private var portal: Portal!
     private var altar: Altar!
     private var lastUpdateTime: TimeInterval = 0
+    private let worker = Worker()
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -33,35 +33,30 @@ class GameScene: SKScene {
         map.zPosition = -1
         addChild(map)
 
-        // Hero
-        addChild(hero)
-        hero.zPosition = 3
-        hero.position = map.position + CGPoint(x: 0, y: -50)
+        let altar = Altar()
+        self.altar = altar
+        addChild(altar.node)
+        altar.moveComponent?.position = CGPoint(x: size.width * 0.25, y: size.height / 2)
+
+        addChild(worker.node)
+        let pos = CGPoint(x: size.width * 0.25, y: size.height / 2 - 50)
+        if let moveComponent = worker.component(ofType: MoveComponent.self) {
+            moveComponent.position = pos
+            moveComponent.target = pos
+        }
 
         // Portal: place at random location on the map
         let portal = Portal()
         self.portal = portal
-        addChild(portal)
-        // Compute random position within tile map bounds
-        let mapSize = map.tileMap.mapSize
-        let halfW = mapSize.width / 2
-        let halfH = mapSize.height / 2
-        let randX = CGFloat.random(in: -halfW...halfW) + map.position.x
-        let randY = CGFloat.random(in: -halfH...halfH) + map.position.y
-        portal.position = CGPoint(x: randX, y: randY)
-
-        // Altar: place at center of the map
-        let altar = Altar()
-        self.altar = altar
-        addChild(altar)
-        altar.position = map.position
+        addChild(portal.node)
+        portal.moveComponent?.position = CGPoint(x: size.width * 0.75, y: size.height / 2)
 
         let wait = SKAction.wait(forDuration: 2.0)
         let doSpawn = SKAction.run {
             portal.spawn()
             altar.spawn()
         }
-        portal.run(.sequence([wait, doSpawn]))
+        portal.node.run(.sequence([wait, doSpawn]))
     }
 }
 
@@ -70,12 +65,14 @@ extension GameScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        routeHero(to: location)
+//        routeHero(to: location)
+        worker.component(ofType: MoveComponent.self)?.target = location
     }
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
-        routeHero(to: location)
+//        routeHero(to: location)
+        worker.component(ofType: MoveComponent.self)?.target = location
     }
 }
 
@@ -87,15 +84,15 @@ extension GameScene {
         }
         var dt = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
-        // Clamp dt to avoid large jumps on resume
-        if dt.isNaN || dt.isInfinite { dt = 1.0 / 60.0 }
-        dt = min(max(dt, 0), 0.1)
-        hero.update(deltaTime: dt)
+//        for system in componentSystems {
+//            system.update(deltaTime: dt)
+//        }
+        worker.update(deltaTime: dt)
 
-        // Dynamic z-ordering: bring obstacles in front when hero is below them
-        for node in children.compactMap({ $0 as? SKNode & Obstacle }) {
-            node.zPosition = hero.position.y < node.position.y ? 2 : 4
-        }
+//        // Clamp dt to avoid large jumps on resume
+//        if dt.isNaN || dt.isInfinite { dt = 1.0 / 60.0 }
+//        dt = min(max(dt, 0), 0.1)
+//        hero.update(deltaTime: dt)
     }
 }
 #endif
@@ -110,57 +107,71 @@ extension GameScene {
 #endif
 
 // MARK: - Pathfinding
-extension GameScene {
-    private func routeHero(to destination: CGPoint) {
-        let path = planPath(from: hero.position, to: destination)
-        if path.isEmpty {
-            hero.walkPath([destination])
-        } else {
-            hero.walkPath(path)
-        }
-    }
-
-    private func planPath(from start: CGPoint, to end: CGPoint) -> [CGPoint] {
-        let obstacleNodes: [SKNode & Obstacle] = children.compactMap { $0 as? (SKNode & Obstacle) }
-        let rectsScene: [CGRect] = obstacleNodes.compactMap { node in
-            node.obstacleRect + node.position
-        }
-
-        let heroRadius = max(1.0, hero.calculateAccumulatedFrame().width / 3.0)
-        let obstacles: [GKPolygonObstacle] = rectsScene.map { .init(rect: $0) }
-        let graph = GKObstacleGraph(obstacles: obstacles, bufferRadius: Float(heroRadius))
-
-        let startNode = GKGraphNode2D(point: start.float2)
-        let endNode = GKGraphNode2D(point: end.float2)
-
-        graph.connectUsingObstacles(node: startNode)
-        graph.connectUsingObstacles(node: endNode)
-
-        let nodes = graph.findPath(from: startNode, to: endNode) as! [GKGraphNode2D]
-        return nodes.map { $0.point }
-    }
-}
-
-extension GKPolygonObstacle {
-    convenience init(rect: CGRect) {
-        let pts: [SIMD2<Float>] = [
-            rect.topLeft.float2,
-            rect.topRight.float2,
-            rect.bottomRight.float2,
-            rect.bottomLeft.float2,
-        ]
-        self.init(points: pts)
-    }
-}
+//extension GameScene {
+//    private func routeHero(to destination: CGPoint) {
+//        let path = planPath(from: hero.position, to: destination)
+//        if path.isEmpty {
+//            hero.walkPath([destination])
+//        } else {
+//            hero.walkPath(path)
+//        }
+//    }
+//
+//    private func planPath(from start: CGPoint, to end: CGPoint) -> [CGPoint] {
+//        let obstacleNodes: [SKNode & Obstacle] = children.compactMap { $0 as? (SKNode & Obstacle) }
+//        let rectsScene: [CGRect] = obstacleNodes.compactMap { node in
+//            node.obstacleRect + node.position
+//        }
+//
+//        let heroRadius = max(1.0, hero.calculateAccumulatedFrame().width / 3.0)
+//        let obstacles: [GKPolygonObstacle] = rectsScene.map { .init(rect: $0) }
+//        let graph = GKObstacleGraph(obstacles: obstacles, bufferRadius: Float(heroRadius))
+//
+//        let startNode = GKGraphNode2D(point: start.float2)
+//        let endNode = GKGraphNode2D(point: end.float2)
+//
+//        graph.connectUsingObstacles(node: startNode)
+//        graph.connectUsingObstacles(node: endNode)
+//
+//        let nodes = graph.findPath(from: startNode, to: endNode) as! [GKGraphNode2D]
+//        return nodes.map { $0.point }
+//    }
+//}
+//
+//extension GKPolygonObstacle {
+//    convenience init(rect: CGRect) {
+//        let pts: [SIMD2<Float>] = [
+//            rect.topLeft.float2,
+//            rect.topRight.float2,
+//            rect.bottomRight.float2,
+//            rect.bottomLeft.float2,
+//        ]
+//        self.init(points: pts)
+//    }
+//}
 
 extension CGPoint {
     var float2: SIMD2<Float> {
         SIMD2<Float>(Float(x), Float(y))
+    }
+
+    var length: CGFloat {
+        hypot(x, y)
+    }
+
+    var angle: CGFloat {
+        atan2(y, x)
     }
 }
 
 extension GKGraphNode2D {
     var point: CGPoint {
         CGPoint(x: CGFloat(position.x), y: CGFloat(position.y))
+    }
+}
+
+extension SIMD2<Float> {
+    var cgPoint: CGPoint {
+        CGPoint(x: CGFloat(x), y: CGFloat(y))
     }
 }

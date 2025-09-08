@@ -1,43 +1,41 @@
 //
-//  Portal.swift
+//  Altar.swift
 //  RushDefense
 //
-//  Visual portal object with spawn and idle animations.
+//  Visual altar object with spawn and idle animations.
 //
 
 import Foundation
 import SpriteKit
 
-enum PortalTexture: TextureSheetProvider {
+enum AltarTexture: TextureSheetProvider {
     case start
     case idle
 
     var assetName: String {
         switch self {
-        case .start: return "Portal1_Start"
-        case .idle: return "Portal1_Idle"
+        case .start: return "Altar_Start"
+        case .idle: return "Altar_Idle"
         }
     }
 }
 
-/// Portal node that can play a spawn sequence then loop idle.
-class Portal: SKNode, Obstacle {
+/// Altar node that can play a spawn sequence then loop idle.
+class Altar: NodeEntity, Obstacle {
     // MARK: - Configuration
-    /// Time per animation frame.
     var timePerFrame: TimeInterval = 0.12
 
     // MARK: - Private
-    private let container = SKNode()
     private let sprite = SKSpriteNode()
 
     // MARK: - Lifecycle
     override init() {
         super.init()
-        addChild(container)
-        container.addChild(sprite)
+        node.addChild(sprite)
+        addComponent(MoveComponent())
 
         // Default appearance
-        let initialTexture = PortalTexture.start.textures.first
+        let initialTexture = AltarTexture.start.textures.first
         sprite.texture = initialTexture
         if let t = initialTexture {
             sprite.size = t.size()
@@ -51,13 +49,12 @@ class Portal: SKNode, Obstacle {
     }
 
     // MARK: - Public API
-    /// Plays the spawn animation once, then loops the idle animation.
     func spawn() {
-        sprite.removeAction(forKey: "portal_spawn")
-        sprite.removeAction(forKey: "portal_idle")
+        sprite.removeAction(forKey: "altar_spawn")
+        sprite.removeAction(forKey: "altar_idle")
 
-        let startFrames = PortalTexture.start.textures
-        let idleFrames = PortalTexture.idle.textures
+        let startFrames = AltarTexture.start.textures
+        let idleFrames = AltarTexture.idle.textures
 
         sprite.texture = startFrames.first
         let start = SKAction.animate(with: startFrames, timePerFrame: timePerFrame, resize: false, restore: false)
@@ -67,14 +64,14 @@ class Portal: SKNode, Obstacle {
             let idle = SKAction.repeatForever(
                 SKAction.animate(with: idleFrames, timePerFrame: self.timePerFrame, resize: false, restore: false)
             )
-            self.sprite.run(idle, withKey: "portal_idle")
+            self.sprite.run(idle, withKey: "altar_idle")
         }
         let sequence = SKAction.sequence([start, beginIdle])
-        sprite.run(sequence, withKey: "portal_spawn")
+        sprite.run(sequence, withKey: "altar_spawn")
     }
 
     // MARK: - Obstacle
     var obstacleRect: CGRect {
-        CGRect(center: CGPoint(x: 0, y: -14), size: CGSize(width: 68, height: 30))
+        CGRect(center: CGPoint(x: 0, y: -10), size: CGSize(width: 20, height: 20))
     }
 }
