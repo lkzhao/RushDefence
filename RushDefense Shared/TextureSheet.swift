@@ -7,21 +7,16 @@
 
 import SpriteKit
 
-protocol TextureSheetProvider {
-    /// Name of the base image asset (a horizontal strip of square frames).
-    var assetName: String { get }
-}
+class TextureCache {
+    static let shared = TextureCache()
+    private init() {}
 
-fileprivate var cache: [String: [SKTexture]] = [:]
+    private var cache: [String: [SKTexture]] = [:]
 
-extension TextureSheetProvider {
-    /// Sliced frames from the sheet specified by `assetName`.
-    /// Assumes a horizontal strip of square frames (frameWidth == frameHeight).
-    var textures: [SKTexture] {
-        let key = assetName
-        if let cached = cache[key] { return cached }
+    func textures(for assetName: String) -> [SKTexture] {
+        if let cached = cache[assetName] { return cached }
 
-        let base = SKTexture(imageNamed: key)
+        let base = SKTexture(imageNamed: assetName)
         base.filteringMode = .nearest
         let size = base.size()
         // Derive columns by width/height ratio, clamp to at least 1.
@@ -33,7 +28,20 @@ extension TextureSheetProvider {
             tex.filteringMode = .nearest
             return tex
         }
-        cache[key] = frames
+        cache[assetName] = frames
         return frames
+    }
+}
+
+protocol TextureSheetProvider {
+    /// Name of the base image asset (a horizontal strip of square frames).
+    var assetName: String { get }
+}
+
+extension TextureSheetProvider {
+    /// Sliced frames from the sheet specified by `assetName`.
+    /// Assumes a horizontal strip of square frames (frameWidth == frameHeight).
+    var textures: [SKTexture] {
+        TextureCache.shared.textures(for: assetName)
     }
 }

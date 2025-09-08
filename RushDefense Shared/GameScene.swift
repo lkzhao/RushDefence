@@ -40,7 +40,7 @@ class GameScene: SKScene {
 
         addChild(worker.node)
         let pos = CGPoint(x: size.width * 0.25, y: size.height / 2 - 50)
-        if let moveComponent = worker.component(ofType: MoveComponent.self) {
+        if let moveComponent = worker.moveComponent {
             moveComponent.position = pos
             moveComponent.target = pos
         }
@@ -53,8 +53,8 @@ class GameScene: SKScene {
 
         let wait = SKAction.wait(forDuration: 2.0)
         let doSpawn = SKAction.run {
-            portal.spawn()
-            altar.spawn()
+            portal.visualComponent?.spawn()
+            altar.visualComponent?.spawn()
         }
         portal.node.run(.sequence([wait, doSpawn]))
     }
@@ -66,13 +66,13 @@ extension GameScene {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
 //        routeHero(to: location)
-        worker.component(ofType: MoveComponent.self)?.target = location
+        worker.moveComponent?.target = location
     }
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
 //        routeHero(to: location)
-        worker.component(ofType: MoveComponent.self)?.target = location
+        worker.moveComponent?.target = location
     }
 }
 
@@ -82,17 +82,9 @@ extension GameScene {
         if lastUpdateTime == 0 {
             lastUpdateTime = currentTime
         }
-        var dt = currentTime - lastUpdateTime
+        let dt = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
-//        for system in componentSystems {
-//            system.update(deltaTime: dt)
-//        }
         worker.update(deltaTime: dt)
-
-//        // Clamp dt to avoid large jumps on resume
-//        if dt.isNaN || dt.isInfinite { dt = 1.0 / 60.0 }
-//        dt = min(max(dt, 0), 0.1)
-//        hero.update(deltaTime: dt)
     }
 }
 #endif
@@ -149,29 +141,3 @@ extension GameScene {
 //        self.init(points: pts)
 //    }
 //}
-
-extension CGPoint {
-    var float2: SIMD2<Float> {
-        SIMD2<Float>(Float(x), Float(y))
-    }
-
-    var length: CGFloat {
-        hypot(x, y)
-    }
-
-    var angle: CGFloat {
-        atan2(y, x)
-    }
-}
-
-extension GKGraphNode2D {
-    var point: CGPoint {
-        CGPoint(x: CGFloat(position.x), y: CGFloat(position.y))
-    }
-}
-
-extension SIMD2<Float> {
-    var cgPoint: CGPoint {
-        CGPoint(x: CGFloat(x), y: CGFloat(y))
-    }
-}
