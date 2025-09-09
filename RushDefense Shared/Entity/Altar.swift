@@ -13,6 +13,7 @@ class Altar: NodeEntity, Obstacle {
     // MARK: - Lifecycle
     override init() {
         super.init()
+        entityType = [.building]
         addComponent(MoveComponent())
         addComponent(IdleSpawnVisualComponent(idleTexture: "Altar_Idle", spawnTexture: "Altar_Start"))
         visualComponent?.sprite.anchorPoint = CGPoint(x: 0.5, y: 0.3)

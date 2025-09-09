@@ -8,6 +8,7 @@
 class NodeEntity: GKEntity {
     let node = SKNode()
     weak var scene: EntityScene?
+    var entityType: EntityType = []
 
     func didAddToScene(_ scene: EntityScene) {
         self.scene = scene

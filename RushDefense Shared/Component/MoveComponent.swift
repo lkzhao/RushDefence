@@ -18,6 +18,7 @@ class MoveComponent: GKComponent {
     var movementForce: CGFloat = 400 // continuous force magnitude toward target (N-like in pts*mass/s^2)
     var arrivalRadius: CGFloat = 4.0
     var arrivalSnapRadius: CGFloat = 1.0
+    var behaviors: [SteeringBehavior] = [SeekBehavior(), AvoidBehavior()]
 
     var position: CGPoint {
         get {
@@ -50,7 +51,7 @@ class MoveComponent: GKComponent {
         guard seconds > 0 else { return }
         let dt = CGFloat(seconds)
 
-        // 1) Steering: compute force toward target (if any)
+        // 1) Arrival snap check before composing forces
         var force: CGPoint = .zero
         if let target, target != position {
             let toTarget = target - position
@@ -59,24 +60,24 @@ class MoveComponent: GKComponent {
                 // Snap to target and stop when extremely close.
                 position = target
                 velocity = .zero
-            } else {
-                let dir = toTarget.normalized()
-                // Ease-in arrival: scale force as distance approaches target within arrivalRadius.
-                let factor = min(1, dist / arrivalRadius)
-                let scaledForce = movementForce * factor
-                force += dir * scaledForce
-                // Face desired direction when steering.
-                self.direction = dir
             }
         }
 
-        // 2) Integrate acceleration into velocity
+        // 2) Compose steering forces via behaviors
+        for behavior in behaviors {
+            force += behavior.computeForce(for: self, dt: dt)
+        }
+        if force.length > 0 {
+            self.direction = force.normalized()
+        }
+
+        // 3) Integrate acceleration into velocity
         if mass > 0 {
             let accel = force / mass
             velocity += accel * dt
         }
 
-        // 3) Apply damping and clamp speed
+        // 4) Apply damping and clamp speed
         if linearDamping > 0 {
             let factor = max(0, 1 - linearDamping * dt)
             velocity = velocity * factor
@@ -84,16 +85,18 @@ class MoveComponent: GKComponent {
         }
         velocity = velocity.clampedMagnitude(to: speed)
 
-        // 4) Integrate velocity into position
+        // 5) Integrate velocity into position
         if velocity.x != 0 || velocity.y != 0 {
             position += velocity * dt
         }
 
-        // 5) Final facing: follow velocity if no explicit steering this frame
+        // 6) Final facing: follow velocity if no explicit steering this frame
         if force == .zero && velocity.length > 0 {
             self.direction = velocity.normalized()
         }
     }
+
+    // Steering behavior methods removed in favor of protocol-based behaviors.
 
     // MARK: - Forces
     /// Adds an instantaneous change in momentum, modifying velocity by `impulse / mass`.

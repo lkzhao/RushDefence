@@ -8,6 +8,7 @@
 class Worker: NodeEntity {
     override init() {
         super.init()
+        entityType = [.ally, .worker]
         addComponent(MoveComponent())
         addComponent(WorkerVisualComponent())
         addComponent(AttackComponent())

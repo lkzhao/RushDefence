@@ -10,6 +10,7 @@ class Enemy: NodeEntity {
 
     override init() {
         super.init()
+        entityType = [.enemy]
         addComponent(MoveComponent().then({ $0.speed = 40 }))
         addComponent(healthComponent)
         addComponent(EnemyVisualComponent(texturePrefix: "Enemies/2/"))

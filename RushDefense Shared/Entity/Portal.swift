@@ -12,6 +12,7 @@ class Portal: NodeEntity, Obstacle {
 
     override init() {
         super.init()
+        entityType = [.building]
         addComponent(MoveComponent())
         addComponent(IdleSpawnVisualComponent(idleTexture: "Portal1_Idle",
                                               spawnTexture: "Portal1_Start"))
