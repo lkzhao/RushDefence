@@ -5,7 +5,7 @@
 //  Created by Luke Zhao on 9/8/25.
 //
 
-class IdleSpawnVisualComponent: GKComponent {
+class IdleSpawnVisualComponent: GKComponent, VisualComponent {
     let sprite = SKSpriteNode()
     var timePerFrame: TimeInterval = 0.12
 
@@ -51,5 +51,25 @@ class IdleSpawnVisualComponent: GKComponent {
         }
         let sequence = SKAction.sequence([start, beginIdle])
         sprite.run(sequence, withKey: "spawn")
+    }
+
+    func despawn() {
+        // Stop any ongoing animations before reversing the spawn.
+        sprite.removeAllActions()
+
+        let startFrames = TextureCache.shared.textures(for: spawnTexture)
+        let reversedFrames = Array(startFrames.reversed())
+
+        // Ensure we start from the fully spawned frame.
+        if let first = reversedFrames.first {
+            sprite.texture = first
+        }
+
+        let reverseSpawn = SKAction.animate(with: reversedFrames, timePerFrame: timePerFrame, resize: false, restore: false)
+        let remove = SKAction.run { [weak self] in
+            (self?.entity as? NodeEntity)?.removeFromScene()
+        }
+        let sequence = SKAction.sequence([reverseSpawn, remove])
+        sprite.run(sequence, withKey: "despawn")
     }
 }

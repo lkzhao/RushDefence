@@ -41,8 +41,8 @@ class HealthComponent: GKComponent {
         currentHealth -= amount
         if currentHealth <= 0 {
             currentHealth = 0
-            if let enemyVisualComponent = entity?.components.compactMap({ $0 as? EnemyVisualComponent }).first {
-                enemyVisualComponent.despawn()
+            if let visual = entity?.components.compactMap({ $0 as? VisualComponent }).first {
+                visual.despawn()
                 entity?.moveComponent?.target = nil
             } else if let entity = entity as? NodeEntity {
                 entity.removeFromScene()

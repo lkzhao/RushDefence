@@ -6,10 +6,6 @@
 //
 
 class Altar: NodeEntity, Obstacle {
-    var visualComponent: IdleSpawnVisualComponent? {
-        component(ofType: IdleSpawnVisualComponent.self)
-    }
-
     // MARK: - Lifecycle
     override init() {
         super.init()

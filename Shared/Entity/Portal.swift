@@ -6,10 +6,6 @@
 //
 
 class Portal: NodeEntity, Obstacle {
-    var visualComponent: IdleSpawnVisualComponent? {
-        component(ofType: IdleSpawnVisualComponent.self)
-    }
-
     override init() {
         super.init()
         entityType = [.building]
