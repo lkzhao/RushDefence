@@ -30,8 +30,7 @@ enum WorkerTexture: TextureSheetProvider {
     }
 }
 
-class WorkerVisualComponent: Component {
-    let sprite = SKSpriteNode()
+class WorkerVisualComponent: VisualComponent {
     var textureIndex: Int = 0
     var lastTextureUpdateTime: Double = 0
     var renderTime: Double = 0
@@ -62,8 +61,4 @@ class WorkerVisualComponent: Component {
         renderTime += seconds
     }
 
-    override func didAddToEntity() {
-        super.didAddToEntity()
-        entity?.node.addChild(sprite)
-    }
 }

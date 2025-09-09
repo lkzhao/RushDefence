@@ -5,8 +5,7 @@
 
 import SpriteKit
 
-class SpriteComponent: Component {
-    let sprite = SKSpriteNode()
+class SpriteComponent: VisualComponent {
     let autoRotateWithVelocity: Bool
 
     init(textureName: String, anchorPoint: CGPoint = CGPoint(x: 0.5, y: 0.5), autoRotateWithVelocity: Bool = false) {
@@ -18,10 +17,6 @@ class SpriteComponent: Component {
         sprite.anchorPoint = anchorPoint
     }
 
-    override func didAddToEntity() {
-        super.didAddToEntity()
-        entity?.node.addChild(sprite)
-    }
 
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)

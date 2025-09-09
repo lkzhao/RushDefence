@@ -8,7 +8,7 @@
 import SpriteKit
 
 class EntityScene: SKScene {
-    var entities = [Entity]()
+    private(set) var entities = [Entity]()
     private var lastUpdateTime: TimeInterval = 0
 
     func addEntity(_ entity: Entity) {

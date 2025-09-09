@@ -30,6 +30,9 @@ class Entity {
     func addComponent(_ component: Component) {
         components.append(component)
         component.entity = self
+        if let visual = component as? VisualComponent {
+            node.addChild(visual.sprite)
+        }
         component.didAddToEntity()
     }
 

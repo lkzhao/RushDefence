@@ -5,8 +5,7 @@
 //  Created by Luke Zhao on 9/9/25.
 //
 
-class EnemyVisualComponent: Component, VisualComponent {
-    let sprite = SKSpriteNode()
+class EnemyVisualComponent: VisualComponent {
     var textureIndex: Int = 0
     var lastTextureUpdateTime: Double = 0
     var renderTime: Double = 0
@@ -40,12 +39,8 @@ class EnemyVisualComponent: Component, VisualComponent {
         renderTime += seconds
     }
 
-    override func didAddToEntity() {
-        super.didAddToEntity()
-        entity?.node.addChild(sprite)
-    }
 
-    func despawn() {
+    override func despawn() {
         guard let agent = entity?.component(ofType: MoveComponent.self) else { return }
         let textureSuffix = agent.direction.y < 0 ? "DeathSD" : "DeathSU"
         let frames = TextureCache.shared.textures(for: "\(texturePrefix)\(textureSuffix)")

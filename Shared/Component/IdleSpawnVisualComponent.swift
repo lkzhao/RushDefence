@@ -5,8 +5,7 @@
 //  Created by Luke Zhao on 9/8/25.
 //
 
-class IdleSpawnVisualComponent: Component, VisualComponent {
-    let sprite = SKSpriteNode()
+class IdleSpawnVisualComponent: VisualComponent {
     var timePerFrame: TimeInterval = 0.12
 
     let idleTexture: String
@@ -21,12 +20,8 @@ class IdleSpawnVisualComponent: Component, VisualComponent {
         sprite.size = initialTexture?.size() ?? .zero
     }
 
-    override func didAddToEntity() {
-        super.didAddToEntity()
-        entity?.node.addChild(sprite)
-    }
 
-    func spawn() {
+    override func spawn() {
         sprite.removeAction(forKey: "spawn")
         sprite.removeAction(forKey: "idle")
 
@@ -47,7 +42,7 @@ class IdleSpawnVisualComponent: Component, VisualComponent {
         sprite.run(sequence, withKey: "spawn")
     }
 
-    func despawn() {
+    override func despawn() {
         // Stop any ongoing animations before reversing the spawn.
         sprite.removeAllActions()
 
