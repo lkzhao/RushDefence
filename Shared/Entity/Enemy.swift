@@ -6,13 +6,12 @@
 //
 
 class Enemy: NodeEntity {
-    let healthComponent = HealthComponent(maxHealth: 100)
 
     override init() {
         super.init()
         entityType = [.enemy]
         addComponent(MoveComponent().then({ $0.speed = 40 }))
-        addComponent(healthComponent)
+        addComponent(HealthComponent(maxHealth: 100))
         addComponent(EnemyVisualComponent(texturePrefix: "Enemies/2/"))
     }
 

@@ -37,7 +37,7 @@ class AttackComponent: GKComponent {
         if target == nil {
             let enemiesInRange = scene.entities.compactMap { $0 as? Enemy }.filter { enemy in
                 let distance = entity.node.position.distance(enemy.node.position)
-                return distance <= attackRange
+                return distance <= attackRange && enemy.healthComponent?.currentHealth ?? 0 > 0
             }.sorted { (enemy1, enemy2) -> Bool in
                 let dist1 = entity.node.position.distance(enemy1.node.position)
                 let dist2 = entity.node.position.distance(enemy2.node.position)
@@ -55,7 +55,7 @@ class AttackComponent: GKComponent {
                                         damage: attackDamage,
                                         knockback: knockback,
                                         direction: dir,
-                                        ownerType: (entity as? NodeEntity)?.entityType ?? [])
+                                        ownerType: entity.entityType)
             projectile.moveComponent?.position = entity.node.position
             scene.addEntity(projectile)
         }

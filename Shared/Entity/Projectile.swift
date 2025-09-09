@@ -20,7 +20,6 @@ class Projectile: NodeEntity {
         mover.velocity = direction.normalized() * speed
         mover.speed = speed
         mover.linearDamping = 0
-        mover.target = direction.normalized() * maxDistance
         addComponent(mover)
 
         projectileComponent.maxDistance = maxDistance

@@ -71,3 +71,9 @@ class HealthComponent: GKComponent {
         healthBar.position = CGPoint(x: 0, y: offsetY)
     }
 }
+
+extension GKEntity {
+    var healthComponent: HealthComponent? {
+        component(ofType: HealthComponent.self)
+    }
+}

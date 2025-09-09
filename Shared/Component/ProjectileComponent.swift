@@ -75,6 +75,7 @@ class ProjectileComponent: GKComponent {
     }
 
     private func isValidTarget(_ other: NodeEntity) -> Bool {
+        guard other.healthComponent?.currentHealth ?? 0 > 0 else { return false }
         if ownerType.contains(.enemy) {
             return other.entityType.contains(.ally) || other.entityType.contains(.worker) || other.entityType.contains(.building)
         } else {
