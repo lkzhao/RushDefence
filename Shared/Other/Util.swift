@@ -38,12 +38,6 @@ extension CGPoint {
     }
 }
 
-extension GKGraphNode2D {
-    var point: CGPoint {
-        CGPoint(x: CGFloat(position.x), y: CGFloat(position.y))
-    }
-}
-
 extension SIMD2<Float> {
     var cgPoint: CGPoint {
         CGPoint(x: CGFloat(x), y: CGFloat(y))

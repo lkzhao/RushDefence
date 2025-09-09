@@ -6,7 +6,6 @@
 //
 
 import SpriteKit
-import GameplayKit
 
 class Map: SKNode {
     let tileMap: SKTileMapNode

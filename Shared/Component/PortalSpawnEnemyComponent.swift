@@ -5,12 +5,12 @@
 //  Created by Luke Zhao on 9/8/25.
 //
 
-class PortalSpawnEnemyComponent: GKComponent {
+class PortalSpawnEnemyComponent: Component {
     let spawnInterval: TimeInterval
     var timeSinceLastSpawn: TimeInterval = 0
-    let enemyFactory: () -> NodeEntity
+    let enemyFactory: () -> Entity
 
-    init(spawnInterval: TimeInterval, enemyFactory: @escaping () -> NodeEntity) {
+    init(spawnInterval: TimeInterval, enemyFactory: @escaping () -> Entity) {
         self.spawnInterval = spawnInterval
         self.enemyFactory = enemyFactory
         super.init()
@@ -30,9 +30,9 @@ class PortalSpawnEnemyComponent: GKComponent {
     }
 
     private func spawnEnemy() {
-        guard let scene = (entity as? NodeEntity)?.node.scene as? GameScene else { return }
+        guard let scene = entity?.node.scene as? GameScene else { return }
         let enemy = enemyFactory()
-        enemy.moveComponent?.position = (entity as? NodeEntity)?.node.position ?? .zero
+        enemy.moveComponent?.position = entity?.node.position ?? .zero
         enemy.moveComponent?.target = scene.altar.node.position
         scene.addEntity(enemy)
     }

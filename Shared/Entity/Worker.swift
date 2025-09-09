@@ -5,7 +5,7 @@
 //  Created by Luke Zhao on 9/7/25.
 //
 
-class Worker: NodeEntity {
+class Worker: Entity {
     override init() {
         super.init()
         entityType = [.ally, .worker]

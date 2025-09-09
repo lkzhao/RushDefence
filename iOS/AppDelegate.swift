@@ -7,8 +7,7 @@
 
 import UIKit
 @_exported import BaseToolbox
-@_exported import GameplayKit
-@_exported import SceneKit
+@_exported import SpriteKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -45,4 +44,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-

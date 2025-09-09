@@ -5,7 +5,7 @@
 //  Created by Luke Zhao on 9/8/25.
 //
 
-class IdleSpawnVisualComponent: GKComponent, VisualComponent {
+class IdleSpawnVisualComponent: Component, VisualComponent {
     let sprite = SKSpriteNode()
     var timePerFrame: TimeInterval = 0.12
 
@@ -21,15 +21,9 @@ class IdleSpawnVisualComponent: GKComponent, VisualComponent {
         sprite.size = initialTexture?.size() ?? .zero
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override func didAddToEntity() {
         super.didAddToEntity()
-        if let entity = entity as? NodeEntity {
-            entity.node.addChild(sprite)
-        }
+        entity?.node.addChild(sprite)
     }
 
     func spawn() {
@@ -66,9 +60,7 @@ class IdleSpawnVisualComponent: GKComponent, VisualComponent {
         }
 
         let reverseSpawn = SKAction.animate(with: reversedFrames, timePerFrame: timePerFrame, resize: false, restore: false)
-        let remove = SKAction.run { [weak self] in
-            (self?.entity as? NodeEntity)?.removeFromScene()
-        }
+        let remove = SKAction.run { [weak self] in self?.entity?.removeFromScene() }
         let sequence = SKAction.sequence([reverseSpawn, remove])
         sprite.run(sequence, withKey: "despawn")
     }

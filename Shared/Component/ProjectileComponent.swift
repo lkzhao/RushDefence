@@ -4,9 +4,8 @@
 //
 
 import SpriteKit
-import GameplayKit
 
-class ProjectileComponent: GKComponent {
+class ProjectileComponent: Component {
     var speed: CGFloat
     var damage: Int
     var knockback: CGFloat
@@ -22,12 +21,8 @@ class ProjectileComponent: GKComponent {
         super.init()
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override func update(deltaTime seconds: TimeInterval) {
-        guard seconds > 0, let entity = entity as? NodeEntity,
+        guard seconds > 0, let entity = entity,
               let scene = entity.scene else { return }
 
         // Track distance; MoveComponent integrates position already.
@@ -74,7 +69,7 @@ class ProjectileComponent: GKComponent {
         }
     }
 
-    private func isValidTarget(_ other: NodeEntity) -> Bool {
+    private func isValidTarget(_ other: Entity) -> Bool {
         guard other.healthComponent?.currentHealth ?? 0 > 0 else { return false }
         if ownerType.contains(.enemy) {
             return other.entityType.contains(.ally) || other.entityType.contains(.worker) || other.entityType.contains(.building)

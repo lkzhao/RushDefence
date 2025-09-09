@@ -4,9 +4,8 @@
 //
 
 import SpriteKit
-import GameplayKit
 
-class TrailComponent: GKComponent {
+class TrailComponent: Component {
     var spawnInterval: TimeInterval = 0.04
     var lifetime: TimeInterval = 0.4
     var startAlpha: CGFloat = 0.6
@@ -32,7 +31,7 @@ class TrailComponent: GKComponent {
         guard timeSinceLastSpawn >= spawnInterval else { return }
         timeSinceLastSpawn = 0
 
-        guard let entity = entity as? NodeEntity,
+        guard let entity = entity,
               let parent = entity.node.parent else { return }
 
         let node = SKSpriteNode(texture: texture)
@@ -49,4 +48,3 @@ class TrailComponent: GKComponent {
         node.run(group) { [weak node] in node?.removeFromParent() }
     }
 }
-

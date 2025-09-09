@@ -4,10 +4,7 @@
 //
 //  Created by Luke Zhao on 9/8/25.
 //
-
-
-
-class MoveComponent: GKComponent {
+class MoveComponent: Component {
     var speed: CGFloat = 80 // treated as max speed (pts/s)
     var direction: CGPoint = CGPoint(x: 0, y: -1)
     var target: CGPoint?
@@ -22,13 +19,13 @@ class MoveComponent: GKComponent {
 
     var position: CGPoint {
         get {
-            if let entity = entity as? NodeEntity {
+            if let entity = entity {
                 return entity.node.position
             }
             return .zero
         }
         set {
-            if let entity = entity as? NodeEntity {
+            if let entity = entity {
                 entity.node.position = newValue
                 entity.node.zPosition = 3 - newValue.y / (entity.node.scene?.size.height ?? 100)
             }
@@ -39,13 +36,7 @@ class MoveComponent: GKComponent {
         target != nil && position != target
     }
 
-    override init() {
-        super.init()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    override init() { super.init() }
 
     override func update(deltaTime seconds: TimeInterval) {
         guard seconds > 0 else { return }
@@ -106,8 +97,6 @@ class MoveComponent: GKComponent {
     }
 }
 
-extension GKEntity {
-    var moveComponent: MoveComponent? {
-        component(ofType: MoveComponent.self)
-    }
+extension Entity {
+    var moveComponent: MoveComponent? { component(ofType: MoveComponent.self) }
 }

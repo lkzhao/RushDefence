@@ -1,25 +1,23 @@
+import SpriteKit
 //
 //  VisualComponent.swift
 //  RushDefense iOS
 //
 //  Protocol for components that own a visual node and can despawn.
 //
-
-protocol VisualComponent: GKComponent {
+protocol VisualComponent: AnyObject {
     var sprite: SKSpriteNode { get }
     func despawn()
     func spawn()
 }
 
-extension VisualComponent {
+extension VisualComponent where Self: Component {
     func spawn() {}
     func despawn() {
-        (entity as? NodeEntity)?.removeFromScene()
+        entity?.removeFromScene()
     }
 }
 
-extension GKEntity {
-    var visualComponent: VisualComponent? {
-        components.compactMap { $0 as? VisualComponent }.first
-    }
+extension Entity {
+    var visualComponent: VisualComponent? { components.compactMap { $0 as? VisualComponent }.first }
 }

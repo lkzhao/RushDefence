@@ -38,7 +38,7 @@ class AvoidBehavior: SteeringBehavior {
     }
 
     func computeForce(for component: MoveComponent, dt: CGFloat) -> CGPoint {
-        guard let selfEntity = component.entity as? NodeEntity,
+        guard let selfEntity = component.entity,
               let scene = selfEntity.scene else { return .zero }
 
         // Only enemies avoid, and only from buildings and workers.

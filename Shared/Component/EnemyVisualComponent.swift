@@ -5,9 +5,7 @@
 //  Created by Luke Zhao on 9/9/25.
 //
 
-
-
-class EnemyVisualComponent: GKComponent, VisualComponent {
+class EnemyVisualComponent: Component, VisualComponent {
     let sprite = SKSpriteNode()
     var textureIndex: Int = 0
     var lastTextureUpdateTime: Double = 0
@@ -21,10 +19,6 @@ class EnemyVisualComponent: GKComponent, VisualComponent {
         sprite.texture = TextureCache.shared.textures(for: "\(texturePrefix)RunSD").first
         sprite.size = sprite.texture!.size()
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func update(deltaTime seconds: TimeInterval) {
@@ -48,9 +42,7 @@ class EnemyVisualComponent: GKComponent, VisualComponent {
 
     override func didAddToEntity() {
         super.didAddToEntity()
-        if let entity = entity as? NodeEntity {
-            entity.node.addChild(sprite)
-        }
+        entity?.node.addChild(sprite)
     }
 
     func despawn() {
@@ -59,9 +51,7 @@ class EnemyVisualComponent: GKComponent, VisualComponent {
         let frames = TextureCache.shared.textures(for: "\(texturePrefix)\(textureSuffix)")
         sprite.removeAllActions()
         let death = SKAction.animate(with: frames, timePerFrame: timePerFrame, resize: false, restore: false)
-        let remove = SKAction.run {
-            (self.entity as? NodeEntity)?.removeFromScene()
-        }
+        let remove = SKAction.run { self.entity?.removeFromScene() }
         let sequence = SKAction.sequence([death, remove])
         sprite.run(sequence)
     }

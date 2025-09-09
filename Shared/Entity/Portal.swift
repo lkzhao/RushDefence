@@ -5,7 +5,7 @@
 //  Visual portal object with spawn and idle animations.
 //
 
-class Portal: NodeEntity, Obstacle {
+class Portal: Entity, Obstacle {
     override init() {
         super.init()
         entityType = [.building]

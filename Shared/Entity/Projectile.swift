@@ -4,9 +4,8 @@
 //
 
 import SpriteKit
-import GameplayKit
 
-class Projectile: NodeEntity {
+class Projectile: Entity {
     let projectileComponent: ProjectileComponent
 
     init(speed: CGFloat, maxDistance: CGFloat, damage: Int, knockback: CGFloat, direction: CGPoint, ownerType: EntityType) {

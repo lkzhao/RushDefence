@@ -7,14 +7,14 @@
 
 import Foundation
 
-class AttackComponent: GKComponent {
+class AttackComponent: Component {
     var attackRange: CGFloat = 150
     var attackDamage: Int = 50
     var attackInterval: TimeInterval = 0.5
     var lastAttackTime: TimeInterval = 0
     // What types of entities this component can target. Defaults to enemies.
     var targetEntityType: EntityType = [.enemy]
-    var target: NodeEntity?
+    var target: Entity?
     var knockback: CGFloat = 20 // interpreted as impulse magnitude
     var projectileSpeed: CGFloat = 400
     var projectileMaxDistance: CGFloat = 1000
@@ -29,7 +29,7 @@ class AttackComponent: GKComponent {
     }
 
     func performAttack() {
-        guard let entity = entity as? NodeEntity,
+        guard let entity = entity,
               let scene = entity.node.scene as? GameScene else { return }
 
         if let target, target.node.position.distance(entity.node.position) > attackRange || target.healthComponent?.currentHealth ?? 0 <= 0 {

@@ -5,7 +5,7 @@
 //  Visual altar object with spawn and idle animations.
 //
 
-class Altar: NodeEntity, Obstacle {
+class Altar: Entity, Obstacle {
     // MARK: - Lifecycle
     override init() {
         super.init()

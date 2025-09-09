@@ -4,9 +4,8 @@
 //
 
 import SpriteKit
-import GameplayKit
 
-class SpriteComponent: GKComponent {
+class SpriteComponent: Component {
     let sprite = SKSpriteNode()
     let autoRotateWithVelocity: Bool
 
@@ -19,13 +18,9 @@ class SpriteComponent: GKComponent {
         sprite.anchorPoint = anchorPoint
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override func didAddToEntity() {
         super.didAddToEntity()
-        (entity as? NodeEntity)?.node.addChild(sprite)
+        entity?.node.addChild(sprite)
     }
 
     override func update(deltaTime seconds: TimeInterval) {
@@ -37,4 +32,3 @@ class SpriteComponent: GKComponent {
         }
     }
 }
-

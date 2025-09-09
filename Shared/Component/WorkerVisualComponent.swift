@@ -30,7 +30,7 @@ enum WorkerTexture: TextureSheetProvider {
     }
 }
 
-class WorkerVisualComponent: GKComponent {
+class WorkerVisualComponent: Component {
     let sprite = SKSpriteNode()
     var textureIndex: Int = 0
     var lastTextureUpdateTime: Double = 0
@@ -41,10 +41,6 @@ class WorkerVisualComponent: GKComponent {
         super.init()
         sprite.texture = WorkerTexture.walk1.textures.first
         sprite.size = sprite.texture!.size()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override func update(deltaTime seconds: TimeInterval) {
@@ -68,8 +64,6 @@ class WorkerVisualComponent: GKComponent {
 
     override func didAddToEntity() {
         super.didAddToEntity()
-        if let entity = entity as? NodeEntity {
-            entity.node.addChild(sprite)
-        }
+        entity?.node.addChild(sprite)
     }
 }

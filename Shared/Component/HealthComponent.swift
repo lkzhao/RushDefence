@@ -5,9 +5,7 @@
 //  Created by Luke Zhao on 9/8/25.
 //
 
-
-
-class HealthComponent: GKComponent {
+class HealthComponent: Component {
     var maxHealth: Int
     var currentHealth: Int
     private let healthBar = HealthBarNode()
@@ -18,13 +16,9 @@ class HealthComponent: GKComponent {
         super.init()
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override func didAddToEntity() {
         super.didAddToEntity()
-        if let entity = entity as? NodeEntity {
+        if let entity = entity {
             entity.node.addChild(healthBar)
             updateHealthBarPosition()
             updateHealthBarProgress()
@@ -44,7 +38,7 @@ class HealthComponent: GKComponent {
             if let visual = entity?.components.compactMap({ $0 as? VisualComponent }).first {
                 visual.despawn()
                 entity?.moveComponent?.target = nil
-            } else if let entity = entity as? NodeEntity {
+            } else if let entity = entity {
                 entity.removeFromScene()
             }
         }
@@ -65,15 +59,11 @@ class HealthComponent: GKComponent {
     }
 
     private func updateHealthBarPosition() {
-        guard let entity = entity as? NodeEntity else { return }
+        guard let entity = entity else { return }
         let frame = entity.node.calculateAccumulatedFrame()
         let offsetY = frame.height / 2 - 8
         healthBar.position = CGPoint(x: 0, y: offsetY)
     }
 }
 
-extension GKEntity {
-    var healthComponent: HealthComponent? {
-        component(ofType: HealthComponent.self)
-    }
-}
+extension Entity { var healthComponent: HealthComponent? { component(ofType: HealthComponent.self) } }

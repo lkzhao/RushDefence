@@ -5,22 +5,21 @@
 //  Created by Luke Zhao on 9/8/25.
 //
 
-
-
+import SpriteKit
 
 class EntityScene: SKScene {
-    var entities = [NodeEntity]()
+    var entities = [Entity]()
     private var lastUpdateTime: TimeInterval = 0
 
-    func addEntity(_ entity: NodeEntity) {
+    func addEntity(_ entity: Entity) {
         entities.append(entity)
         entity.didAddToScene(self)
     }
 
-    func removeEntity(_ entity: NodeEntity) {
-        if let index = entities.firstIndex(of: entity) {
+    func removeEntity(_ entity: Entity) {
+        if let index = entities.firstIndex(where: { $0 === entity }) {
             entities.remove(at: index)
-            entity.removeFromScene()
+            entity.node.removeFromParent()
         }
     }
 

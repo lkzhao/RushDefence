@@ -5,7 +5,7 @@
 //  Created by Luke Zhao on 9/8/25.
 //
 
-class Enemy: NodeEntity {
+class Enemy: Entity {
 
     override init() {
         super.init()
