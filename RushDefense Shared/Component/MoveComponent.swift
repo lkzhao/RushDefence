@@ -8,8 +8,9 @@
 
 
 class MoveComponent: GKComponent {
-    var rotation: CGFloat = 0
-    var target: CGPoint = .zero
+    var speed: CGFloat = 80
+    var direction: CGPoint = CGPoint(x: 0, y: -1)
+    var target: CGPoint?
 
     var position: CGPoint {
         get {
@@ -27,7 +28,7 @@ class MoveComponent: GKComponent {
     }
 
     var isMoving: Bool {
-        position != target
+        target != nil && position != target
     }
 
     override init() {
@@ -39,8 +40,8 @@ class MoveComponent: GKComponent {
     }
 
     override func update(deltaTime seconds: TimeInterval) {
-        guard target != position, seconds > 0 else { return }
-        let maxDistance = seconds * 80
+        guard let target, target != position, seconds > 0 else { return }
+        let maxDistance = seconds * speed
         let toTarget = target - position
         let dist = toTarget.length
         if dist < 1 {
@@ -49,7 +50,7 @@ class MoveComponent: GKComponent {
             let direction = toTarget / dist
             let travel = min(dist, maxDistance)
             position += direction * travel
-            rotation = toTarget.angle
+            self.direction = direction
         }
     }
 }

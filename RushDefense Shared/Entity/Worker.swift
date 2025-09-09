@@ -10,6 +10,7 @@ class Worker: NodeEntity {
         super.init()
         addComponent(MoveComponent())
         addComponent(WorkerVisualComponent())
+        addComponent(AttackComponent())
     }
     
     required init?(coder: NSCoder) {

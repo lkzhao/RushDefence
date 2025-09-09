@@ -15,6 +15,9 @@ class Portal: NodeEntity, Obstacle {
         addComponent(MoveComponent())
         addComponent(IdleSpawnVisualComponent(idleTexture: "Portal1_Idle",
                                               spawnTexture: "Portal1_Start"))
+        addComponent(PortalSpawnEnemyComponent(spawnInterval: 1, enemyFactory: {
+            Enemy()
+        }))
     }
 
     required init?(coder aDecoder: NSCoder) {

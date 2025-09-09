@@ -8,12 +8,11 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
-    private var map: Map!
-    private var portal: Portal!
-    private var altar: Altar!
-    private var lastUpdateTime: TimeInterval = 0
-    private let worker = Worker()
+class GameScene: EntityScene {
+    var map: Map!
+    let portal = Portal()
+    let altar = Altar()
+    let worker = Worker()
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -27,34 +26,25 @@ class GameScene: SKScene {
 
     private func commonInit() {
         scaleMode = .aspectFill
-        // Map behind hero
+
         map = Map(sizeInPoints: size)
         map.position = CGPoint(x: size.width / 2, y: size.height / 2)
         map.zPosition = -1
         addChild(map)
 
-        let altar = Altar()
-        self.altar = altar
-        addChild(altar.node)
-        altar.moveComponent?.position = CGPoint(x: size.width * 0.25, y: size.height / 2)
+        addEntity(altar)
+        altar.moveComponent?.position = CGPoint(x: size.width * 0.75, y: size.height / 2 - 10)
 
-        addChild(worker.node)
-        let pos = CGPoint(x: size.width * 0.25, y: size.height / 2 - 50)
-        if let moveComponent = worker.moveComponent {
-            moveComponent.position = pos
-            moveComponent.target = pos
-        }
+        addEntity(worker)
+        worker.moveComponent?.position = CGPoint(x: size.width * 0.75, y: size.height / 2 - 50)
 
-        // Portal: place at random location on the map
-        let portal = Portal()
-        self.portal = portal
-        addChild(portal.node)
-        portal.moveComponent?.position = CGPoint(x: size.width * 0.75, y: size.height / 2)
+        addEntity(portal)
+        portal.moveComponent?.position = CGPoint(x: size.width * 0.25, y: size.height / 2 + 40)
 
         let wait = SKAction.wait(forDuration: 2.0)
         let doSpawn = SKAction.run {
-            portal.visualComponent?.spawn()
-            altar.visualComponent?.spawn()
+            self.portal.visualComponent?.spawn()
+            self.altar.visualComponent?.spawn()
         }
         portal.node.run(.sequence([wait, doSpawn]))
     }
@@ -73,18 +63,6 @@ extension GameScene {
         let location = touch.location(in: self)
 //        routeHero(to: location)
         worker.moveComponent?.target = location
-    }
-}
-
-// MARK: - Frame Update
-extension GameScene {
-    override func update(_ currentTime: TimeInterval) {
-        if lastUpdateTime == 0 {
-            lastUpdateTime = currentTime
-        }
-        let dt = currentTime - lastUpdateTime
-        lastUpdateTime = currentTime
-        worker.update(deltaTime: dt)
     }
 }
 #endif

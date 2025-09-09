@@ -19,7 +19,6 @@ class IdleSpawnVisualComponent: GKComponent {
         let initialTexture = TextureCache.shared.textures(for: spawnTexture).first
         sprite.texture = initialTexture
         sprite.size = initialTexture?.size() ?? .zero
-        sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     }
 
     required init?(coder aDecoder: NSCoder) {

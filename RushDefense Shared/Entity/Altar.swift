@@ -15,6 +15,7 @@ class Altar: NodeEntity, Obstacle {
         super.init()
         addComponent(MoveComponent())
         addComponent(IdleSpawnVisualComponent(idleTexture: "Altar_Idle", spawnTexture: "Altar_Start"))
+        visualComponent?.sprite.anchorPoint = CGPoint(x: 0.5, y: 0.3)
     }
 
     required init?(coder aDecoder: NSCoder) {

@@ -41,7 +41,6 @@ class WorkerVisualComponent: GKComponent {
         super.init()
         sprite.texture = WorkerTexture.walk1.textures.first
         sprite.size = sprite.texture!.size()
-        sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
     }
 
     required init?(coder: NSCoder) {
@@ -50,10 +49,10 @@ class WorkerVisualComponent: GKComponent {
 
     override func update(deltaTime seconds: TimeInterval) {
         guard let agent = entity?.component(ofType: MoveComponent.self) else { return }
+        let angle = agent.direction.angle
+        let texture = WorkerTexture(angle: CGFloat(angle))
         if agent.isMoving {
-            let angle = agent.rotation
-            sprite.xScale = (angle + .pi).truncatingRemainder(dividingBy: .pi) < .pi / 2 ? -1 : 1
-            let texture = WorkerTexture(angle: CGFloat(angle))
+            sprite.xScale = agent.direction.x < 0 ? 1 : -1
             let frames = texture.textures
             if renderTime > lastTextureUpdateTime + timePerFrame {
                 lastTextureUpdateTime = renderTime
@@ -61,7 +60,6 @@ class WorkerVisualComponent: GKComponent {
             }
             sprite.texture = frames[textureIndex]
         } else {
-            let texture = WorkerTexture(angle: CGFloat(agent.rotation))
             sprite.texture = texture.textures.first
             textureIndex = 0
         }
