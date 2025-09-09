@@ -12,7 +12,7 @@ class Worker: Entity {
         collisionRadius = 12
         addComponent(MoveComponent())
         addComponent(WorkerVisualComponent())
-        addComponent(AttackComponent())
+//        addComponent(AttackComponent())
     }
     
     required init?(coder: NSCoder) {

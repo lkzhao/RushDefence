@@ -32,13 +32,13 @@ class GameScene: EntityScene {
         addChild(map)
 
         addEntity(altar)
-        altar.moveComponent?.position = CGPoint(x: size.width * 0.75, y: size.height / 2 - 10)
+        altar.node.position = CGPoint(x: size.width * 0.75, y: size.height / 2 - 10)
 
         addEntity(worker)
-        worker.moveComponent?.position = CGPoint(x: size.width * 0.75, y: size.height / 2 - 50)
+        worker.node.position = CGPoint(x: size.width * 0.75, y: size.height / 2 - 50)
 
         addEntity(portal)
-        portal.moveComponent?.position = CGPoint(x: size.width * 0.25, y: size.height / 2 + 40)
+        portal.node.position = CGPoint(x: size.width * 0.25, y: size.height / 2 + 40)
 
         let wait = SKAction.wait(forDuration: 2.0)
         let doSpawn = SKAction.run {
