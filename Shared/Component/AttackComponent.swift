@@ -12,7 +12,9 @@ class AttackComponent: GKComponent {
     var attackDamage: Int = 50
     var attackInterval: TimeInterval = 0.5
     var lastAttackTime: TimeInterval = 0
-    var target: Enemy?
+    // What types of entities this component can target. Defaults to enemies.
+    var targetEntityType: EntityType = [.enemy]
+    var target: NodeEntity?
     var knockback: CGFloat = 20 // interpreted as impulse magnitude
     var projectileSpeed: CGFloat = 400
     var projectileMaxDistance: CGFloat = 1000
@@ -35,15 +37,23 @@ class AttackComponent: GKComponent {
         }
 
         if target == nil {
-            let enemiesInRange = scene.entities.compactMap { $0 as? Enemy }.filter { enemy in
-                let distance = entity.node.position.distance(enemy.node.position)
-                return distance <= attackRange && enemy.healthComponent?.currentHealth ?? 0 > 0
-            }.sorted { (enemy1, enemy2) -> Bool in
-                let dist1 = entity.node.position.distance(enemy1.node.position)
-                let dist2 = entity.node.position.distance(enemy2.node.position)
+            let candidates = scene.entities.filter { other in
+                // Exclude self and projectiles
+                guard other !== entity, !other.entityType.contains(.projectile) else { return false }
+                // Must have health and be alive to be targeted
+                guard let hp = other.healthComponent, hp.currentHealth > 0 else { return false }
+                // Must match one of the target types
+                let matchesType = (other.entityType.rawValue & targetEntityType.rawValue) != 0
+                guard matchesType else { return false }
+                // Check distance
+                let distance = entity.node.position.distance(other.node.position)
+                return (distance - other.collisionRadius - entity.collisionRadius) <= attackRange
+            }.sorted { (a, b) -> Bool in
+                let dist1 = entity.node.position.distance(a.node.position)
+                let dist2 = entity.node.position.distance(b.node.position)
                 return dist1 < dist2
             }
-            target = enemiesInRange.first
+            target = candidates.first
         }
 
         if let target {
