@@ -16,7 +16,8 @@ class MoveComponent: GKComponent {
     var linearDamping: CGFloat = 6.0 // per second, 0 = no damping
     var velocityEpsilon: CGFloat = 1e-2
     var movementForce: CGFloat = 400 // continuous force magnitude toward target (N-like in pts*mass/s^2)
-    var arrivalRadius: CGFloat = 1.0
+    var arrivalRadius: CGFloat = 4.0
+    var arrivalSnapRadius: CGFloat = 1.0
 
     var position: CGPoint {
         get {
@@ -54,13 +55,16 @@ class MoveComponent: GKComponent {
         if let target, target != position {
             let toTarget = target - position
             let dist = toTarget.length
-            if dist < arrivalRadius {
-                // Snap to target and stop.
+            if dist < arrivalSnapRadius {
+                // Snap to target and stop when extremely close.
                 position = target
                 velocity = .zero
             } else {
-                let dir = toTarget / dist
-                force += dir * movementForce
+                let dir = toTarget.normalized()
+                // Ease-in arrival: scale force as distance approaches target within arrivalRadius.
+                let factor = min(1, dist / arrivalRadius)
+                let scaledForce = movementForce * factor
+                force += dir * scaledForce
                 // Face desired direction when steering.
                 self.direction = dir
             }
@@ -78,8 +82,7 @@ class MoveComponent: GKComponent {
             velocity = velocity * factor
             if velocity.length < velocityEpsilon { velocity = .zero }
         }
-        let vLen = velocity.length
-        if vLen > speed { velocity = velocity / vLen * speed }
+        velocity = velocity.clampedMagnitude(to: speed)
 
         // 4) Integrate velocity into position
         if velocity.x != 0 || velocity.y != 0 {
@@ -88,8 +91,7 @@ class MoveComponent: GKComponent {
 
         // 5) Final facing: follow velocity if no explicit steering this frame
         if force == .zero && velocity.length > 0 {
-            let len = velocity.length
-            if len > 0 { self.direction = velocity / len }
+            self.direction = velocity.normalized()
         }
     }
 

@@ -7,6 +7,23 @@
 
 import Foundation
 
+// MARK: - CGPoint vector helpers
+extension CGPoint {
+    /// Unit-length vector in the same direction, or `.zero` when length is zero.
+    func normalized() -> CGPoint {
+        let len = length
+        guard len > 0 else { return .zero }
+        return self / len
+    }
+
+    /// Returns this vector clamped to a maximum magnitude.
+    func clampedMagnitude(to maxLength: CGFloat) -> CGPoint {
+        let len = length
+        guard len > maxLength && len > 0 else { return self }
+        return self / len * maxLength
+    }
+}
+
 extension CGPoint {
     var float2: SIMD2<Float> {
         SIMD2<Float>(Float(x), Float(y))
