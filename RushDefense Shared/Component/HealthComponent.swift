@@ -10,6 +10,7 @@
 class HealthComponent: GKComponent {
     var maxHealth: Int
     var currentHealth: Int
+    private let healthBar = HealthBarNode()
 
     init(maxHealth: Int) {
         self.maxHealth = maxHealth
@@ -19,6 +20,21 @@ class HealthComponent: GKComponent {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func didAddToEntity() {
+        super.didAddToEntity()
+        if let entity = entity as? NodeEntity {
+            entity.node.addChild(healthBar)
+            updateHealthBarPosition()
+            updateHealthBarProgress()
+        }
+    }
+
+    override func update(deltaTime seconds: TimeInterval) {
+        super.update(deltaTime: seconds)
+        // Reposition in case the visual sprite size changes or animates.
+        updateHealthBarPosition()
     }
 
     func takeDamage(_ amount: Int) {
@@ -32,6 +48,7 @@ class HealthComponent: GKComponent {
                 entity.removeFromScene()
             }
         }
+        updateHealthBarProgress()
     }
 
     func heal(_ amount: Int) {
@@ -39,5 +56,18 @@ class HealthComponent: GKComponent {
         if currentHealth > maxHealth {
             currentHealth = maxHealth
         }
+        updateHealthBarProgress()
+    }
+
+    private func updateHealthBarProgress() {
+        let maxH = max(1, maxHealth)
+        healthBar.progress = CGFloat(currentHealth) / CGFloat(maxH)
+    }
+
+    private func updateHealthBarPosition() {
+        guard let entity = entity as? NodeEntity else { return }
+        let frame = entity.node.calculateAccumulatedFrame()
+        let offsetY = frame.height / 2 - 8
+        healthBar.position = CGPoint(x: 0, y: offsetY)
     }
 }
