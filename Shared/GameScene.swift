@@ -44,8 +44,11 @@ class GameScene: EntityScene {
         let doSpawn = SKAction.run {
             self.portal.visualComponent?.spawn()
             self.altar.visualComponent?.spawn()
+            self.portal.addComponent(PortalSpawnEnemyComponent(spawnInterval: 1, enemyFactory: {
+                Enemy()
+            }))
         }
-        portal.node.run(.sequence([wait, doSpawn]))
+        run(.sequence([wait, doSpawn]))
     }
 }
 

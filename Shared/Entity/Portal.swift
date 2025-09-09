@@ -12,9 +12,6 @@ class Portal: Entity, Obstacle {
         collisionRadius = 34
         addComponent(IdleSpawnVisualComponent(idleTexture: "Portal1_Idle",
                                               spawnTexture: "Portal1_Start"))
-        addComponent(PortalSpawnEnemyComponent(spawnInterval: 1, enemyFactory: {
-            Enemy()
-        }))
     }
 
     required init?(coder aDecoder: NSCoder) {
