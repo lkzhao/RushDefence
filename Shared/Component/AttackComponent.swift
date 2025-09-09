@@ -32,7 +32,7 @@ class AttackComponent: GKComponent {
         guard let entity = entity as? NodeEntity,
               let scene = entity.node.scene as? GameScene else { return }
 
-        if let target, target.node.position.distance(entity.node.position) > attackRange {
+        if let target, target.node.position.distance(entity.node.position) > attackRange || target.healthComponent?.currentHealth ?? 0 <= 0 {
             self.target = nil
         }
 
