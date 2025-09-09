@@ -24,6 +24,16 @@ extension CGPoint {
     }
 }
 
+extension CGFloat {
+    /// Wraps angle in radians to [0, 2π].
+    var wrapAngle: CGFloat {
+        var a = self
+        while a < 0 { a += 2 * .pi }
+        while a >= 2 * .pi { a -= 2 * .pi }
+        return a
+    }
+}
+
 extension CGPoint {
     var float2: SIMD2<Float> {
         SIMD2<Float>(Float(x), Float(y))

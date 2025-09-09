@@ -5,7 +5,7 @@
 //  Visual altar object with spawn and idle animations.
 //
 
-class Altar: Entity, Obstacle {
+class Altar: Entity {
     // MARK: - Lifecycle
     override init() {
         super.init()
@@ -20,8 +20,4 @@ class Altar: Entity, Obstacle {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Obstacle
-    var obstacleRect: CGRect {
-        CGRect(center: CGPoint(x: 0, y: -10), size: CGSize(width: 20, height: 20))
-    }
 }

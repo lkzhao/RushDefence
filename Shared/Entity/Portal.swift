@@ -5,7 +5,7 @@
 //  Visual portal object with spawn and idle animations.
 //
 
-class Portal: Entity, Obstacle {
+class Portal: Entity {
     override init() {
         super.init()
         entityType = [.building]
@@ -18,8 +18,4 @@ class Portal: Entity, Obstacle {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Obstacle
-    var obstacleRect: CGRect {
-        CGRect(center: CGPoint(x: 0, y: -14), size: CGSize(width: 68, height: 30))
-    }
 }

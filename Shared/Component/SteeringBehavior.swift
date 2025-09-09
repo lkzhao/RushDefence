@@ -29,7 +29,7 @@ class SeekBehavior: SteeringBehavior {
     }
 }
 
-/// Placeholder: returns zero until obstacle data is available.
+/// Avoids other entities based on collision radius.
 class AvoidBehavior: SteeringBehavior {
     let strength: CGFloat
 

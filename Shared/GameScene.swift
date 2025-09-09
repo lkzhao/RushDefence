@@ -12,6 +12,7 @@ class GameScene: EntityScene {
     let portal = Portal()
     let altar = Altar()
     let worker = Worker()
+    let turret = Turret()
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -39,6 +40,9 @@ class GameScene: EntityScene {
 
         addEntity(portal)
         portal.node.position = CGPoint(x: size.width * 0.25, y: size.height / 2 + 40)
+        
+        addEntity(turret)
+        turret.node.position = CGPoint(x: size.width * 0.5, y: size.height / 2)
 
         let wait = SKAction.wait(forDuration: 2.0)
         let doSpawn = SKAction.run {
