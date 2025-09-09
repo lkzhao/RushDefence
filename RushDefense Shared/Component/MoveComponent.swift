@@ -8,9 +8,15 @@
 
 
 class MoveComponent: GKComponent {
-    var speed: CGFloat = 80
+    var speed: CGFloat = 80 // treated as max speed (pts/s)
     var direction: CGPoint = CGPoint(x: 0, y: -1)
     var target: CGPoint?
+    var mass: CGFloat = 1.0
+    var velocity: CGPoint = .zero
+    var linearDamping: CGFloat = 6.0 // per second, 0 = no damping
+    var velocityEpsilon: CGFloat = 1e-2
+    var movementForce: CGFloat = 400 // continuous force magnitude toward target (N-like in pts*mass/s^2)
+    var arrivalRadius: CGFloat = 1.0
 
     var position: CGPoint {
         get {
@@ -40,18 +46,58 @@ class MoveComponent: GKComponent {
     }
 
     override func update(deltaTime seconds: TimeInterval) {
-        guard let target, target != position, seconds > 0 else { return }
-        let maxDistance = seconds * speed
-        let toTarget = target - position
-        let dist = toTarget.length
-        if dist < 1 {
-            position = target
-        } else {
-            let direction = toTarget / dist
-            let travel = min(dist, maxDistance)
-            position += direction * travel
-            self.direction = direction
+        guard seconds > 0 else { return }
+        let dt = CGFloat(seconds)
+
+        // 1) Steering: compute force toward target (if any)
+        var force: CGPoint = .zero
+        if let target, target != position {
+            let toTarget = target - position
+            let dist = toTarget.length
+            if dist < arrivalRadius {
+                // Snap to target and stop.
+                position = target
+                velocity = .zero
+            } else {
+                let dir = toTarget / dist
+                force += dir * movementForce
+                // Face desired direction when steering.
+                self.direction = dir
+            }
         }
+
+        // 2) Integrate acceleration into velocity
+        if mass > 0 {
+            let accel = force / mass
+            velocity += accel * dt
+        }
+
+        // 3) Apply damping and clamp speed
+        if linearDamping > 0 {
+            let factor = max(0, 1 - linearDamping * dt)
+            velocity = velocity * factor
+            if velocity.length < velocityEpsilon { velocity = .zero }
+        }
+        let vLen = velocity.length
+        if vLen > speed { velocity = velocity / vLen * speed }
+
+        // 4) Integrate velocity into position
+        if velocity.x != 0 || velocity.y != 0 {
+            position += velocity * dt
+        }
+
+        // 5) Final facing: follow velocity if no explicit steering this frame
+        if force == .zero && velocity.length > 0 {
+            let len = velocity.length
+            if len > 0 { self.direction = velocity / len }
+        }
+    }
+
+    // MARK: - Forces
+    /// Adds an instantaneous change in momentum, modifying velocity by `impulse / mass`.
+    func applyImpulse(_ impulse: CGPoint) {
+        guard mass > 0 else { return }
+        velocity += impulse / mass
     }
 }
 

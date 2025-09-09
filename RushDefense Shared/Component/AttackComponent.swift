@@ -13,6 +13,7 @@ class AttackComponent: GKComponent {
     var attackInterval: TimeInterval = 0.5
     var lastAttackTime: TimeInterval = 0
     var target: Enemy?
+    var knockback: CGFloat = 20 // interpreted as impulse magnitude
 
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
@@ -44,9 +45,18 @@ class AttackComponent: GKComponent {
         }
 
         if let target {
+            // Apply damage and a simple knockback force away from the attacker.
             target.healthComponent.takeDamage(attackDamage)
             let effectNode = EffectNode(position: target.node.position, source: entity.node.position)
             scene.addChild(effectNode)
+
+            let toTarget = target.node.position - entity.node.position
+            let dist = toTarget.length
+            if dist > 0 {
+                let dir = toTarget / dist
+                target.moveComponent?.applyImpulse(dir * knockback)
+            }
+
             if target.healthComponent.currentHealth <= 0 {
                 self.target = nil
             }
