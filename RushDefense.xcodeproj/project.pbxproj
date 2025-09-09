@@ -16,14 +16,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B17218162E6E90D4000F45FA /* RushDefense Shared */ = {
+		B17218162E6E90D4000F45FA /* Shared */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "RushDefense Shared";
+			path = Shared;
 			sourceTree = "<group>";
 		};
-		B1BC50772E6E3F2700854569 /* RushDefense iOS */ = {
+		B1BC50772E6E3F2700854569 /* iOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "RushDefense iOS";
+			path = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -50,8 +50,8 @@
 		B1BC50672E6E3F2600854569 = {
 			isa = PBXGroup;
 			children = (
-				B17218162E6E90D4000F45FA /* RushDefense Shared */,
-				B1BC50772E6E3F2700854569 /* RushDefense iOS */,
+				B17218162E6E90D4000F45FA /* Shared */,
+				B1BC50772E6E3F2700854569 /* iOS */,
 				B1BC50762E6E3F2700854569 /* Products */,
 				B17218242E6EA7F0000F45FA /* BaseToolbox */,
 				B17218252E6EA7F6000F45FA /* Frameworks */,
@@ -82,8 +82,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				B17218162E6E90D4000F45FA /* RushDefense Shared */,
-				B1BC50772E6E3F2700854569 /* RushDefense iOS */,
+				B17218162E6E90D4000F45FA /* Shared */,
+				B1BC50772E6E3F2700854569 /* iOS */,
 			);
 			name = "RushDefense iOS";
 			packageProductDependencies = (
