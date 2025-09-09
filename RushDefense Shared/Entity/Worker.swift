@@ -9,6 +9,7 @@ class Worker: NodeEntity {
     override init() {
         super.init()
         entityType = [.ally, .worker]
+        collisionRadius = 12
         addComponent(MoveComponent())
         addComponent(WorkerVisualComponent())
         addComponent(AttackComponent())

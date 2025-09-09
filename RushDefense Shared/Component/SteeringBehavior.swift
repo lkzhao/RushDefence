@@ -46,15 +46,12 @@ class AvoidBehavior: SteeringBehavior {
 
         let myPos = component.position
         var force = CGPoint.zero
-
-        // Use accumulated frame for a better approximation (respects animation/scale).
-        let selfFrame = selfEntity.node.calculateAccumulatedFrame()
-        let selfRadius = max(selfFrame.width, selfFrame.height) * 0.1
+        let selfRadius = selfEntity.collisionRadius
 
         for other in scene.entities {
             if other === selfEntity { continue }
             let otherType = other.entityType
-            // Enemies should avoid buildings and workers only.
+
             let shouldAvoid = otherType.contains(.building) || otherType.contains(.worker) || otherType.contains(.enemy)
             if !shouldAvoid { continue }
 
@@ -63,9 +60,8 @@ class AvoidBehavior: SteeringBehavior {
             let dist = offset.length
             if dist <= 0 { continue }
 
-            // Estimate other radius from its accumulated frame.
-            let frame = other.node.calculateAccumulatedFrame()
-            let otherRadius = max(frame.width, frame.height) * (otherType.contains(.enemy) ? 0.1 : 0.5)
+            // Use target's fixed collision radius directly.
+            let otherRadius = other.collisionRadius
             let desired = selfRadius + otherRadius
             let penetration = desired - dist
             if penetration <= 0 { continue }

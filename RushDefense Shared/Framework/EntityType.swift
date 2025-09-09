@@ -16,5 +16,5 @@ struct EntityType: OptionSet {
     static let ally     = EntityType(rawValue: 1 << 1)
     static let building = EntityType(rawValue: 1 << 2)
     static let worker   = EntityType(rawValue: 1 << 3)
+    static let projectile = EntityType(rawValue: 1 << 4)
 }
-

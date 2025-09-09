@@ -14,6 +14,7 @@ class Altar: NodeEntity, Obstacle {
     override init() {
         super.init()
         entityType = [.building]
+        collisionRadius = 16
         addComponent(MoveComponent())
         addComponent(IdleSpawnVisualComponent(idleTexture: "Altar_Idle", spawnTexture: "Altar_Start"))
         visualComponent?.sprite.anchorPoint = CGPoint(x: 0.5, y: 0.3)

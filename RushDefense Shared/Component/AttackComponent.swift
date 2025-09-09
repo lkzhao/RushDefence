@@ -8,12 +8,14 @@
 import Foundation
 
 class AttackComponent: GKComponent {
-    var attackRange: CGFloat = 50
+    var attackRange: CGFloat = 150
     var attackDamage: Int = 50
     var attackInterval: TimeInterval = 0.5
     var lastAttackTime: TimeInterval = 0
     var target: Enemy?
     var knockback: CGFloat = 20 // interpreted as impulse magnitude
+    var projectileSpeed: CGFloat = 400
+    var projectileMaxDistance: CGFloat = 1000
 
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
@@ -45,21 +47,17 @@ class AttackComponent: GKComponent {
         }
 
         if let target {
-            // Apply damage and a simple knockback force away from the attacker.
-            target.healthComponent.takeDamage(attackDamage)
-            let effectNode = EffectNode(position: target.node.position, source: entity.node.position)
-            scene.addChild(effectNode)
-
+            // Fire a simple projectile toward the current target.
             let toTarget = target.node.position - entity.node.position
-            let dist = toTarget.length
-            if dist > 0 {
-                let dir = toTarget / dist
-                target.moveComponent?.applyImpulse(dir * knockback)
-            }
-
-            if target.healthComponent.currentHealth <= 0 {
-                self.target = nil
-            }
+            let dir = toTarget.length > 0 ? toTarget / toTarget.length : CGPoint(x: 1, y: 0)
+            let projectile = Projectile(speed: projectileSpeed,
+                                        maxDistance: projectileMaxDistance,
+                                        damage: attackDamage,
+                                        knockback: knockback,
+                                        direction: dir,
+                                        ownerType: (entity as? NodeEntity)?.entityType ?? [])
+            projectile.moveComponent?.position = entity.node.position
+            scene.addEntity(projectile)
         }
     }
 }

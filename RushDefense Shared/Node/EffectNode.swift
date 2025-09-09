@@ -8,13 +8,13 @@
 class EffectNode: SKNode {
     let sprite = SKSpriteNode(texture: nil)
 
-    init(position: CGPoint, source: CGPoint) {
+    /// Creates a directional effect at a world `position` aligned to `direction`.
+    /// The effect uses the sheet `Effects/4_1` and auto-removes after playing.
+    init(position: CGPoint, direction: CGPoint) {
         super.init()
-        let dist = (position - source).length
-        let targetPos = (position - source) / dist * (dist - 10) + source
-        self.position = targetPos
+        self.position = position
         zPosition = 100
-        let angle = (position - source).angle
+        let angle = direction.angle
         let textures = TextureCache.shared.textures(for: "Effects/4_1")
         sprite.zRotation = angle + .pi
         addChild(sprite)

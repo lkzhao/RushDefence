@@ -13,6 +13,7 @@ class Portal: NodeEntity, Obstacle {
     override init() {
         super.init()
         entityType = [.building]
+        collisionRadius = 34
         addComponent(MoveComponent())
         addComponent(IdleSpawnVisualComponent(idleTexture: "Portal1_Idle",
                                               spawnTexture: "Portal1_Start"))
