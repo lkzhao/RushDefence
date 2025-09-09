@@ -25,12 +25,11 @@ extension CGPoint {
 }
 
 extension CGFloat {
-    /// Wraps angle in radians to [0, 2π].
+    /// Wraps angle in radians to [0, 2π).
     var wrapAngle: CGFloat {
-        var a = self
-        while a < 0 { a += 2 * .pi }
-        while a >= 2 * .pi { a -= 2 * .pi }
-        return a
+        let twoPi = 2 * CGFloat.pi
+        let r = self.truncatingRemainder(dividingBy: twoPi)
+        return r >= 0 ? r : r + twoPi
     }
 }
 
