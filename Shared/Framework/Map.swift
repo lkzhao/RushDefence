@@ -70,6 +70,10 @@ class Map {
         }
     }
 
+    var pointSize: CGSize {
+        CGSize(width: columns, height: rows) * cellSize
+    }
+
     // Dynamic zoom limits, to be set by GameScene
     var minimumZoom: CGFloat = 0.25
     var maximumZoom: CGFloat = 4.0

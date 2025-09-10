@@ -34,6 +34,11 @@ class GameScene: SKScene {
         map = Level1Map()
         map.node.position = CGPoint(x: size.width / 2, y: size.height / 2)
         addChild(map.node)
+        updateZoomLimits()
+        let sceneSize = size
+        let mapSize = map.pointSize
+        let aspectFill = max(sceneSize.width / mapSize.width, sceneSize.height / mapSize.height)
+        map.setZoom(aspectFill)
     }
 }
 
@@ -111,15 +116,9 @@ private extension GameScene {
     func updateZoomLimits() {
         guard map != nil else { return }
         let sceneSize = size
-
-        // Content size of the map in its unscaled coordinate space
-        let contentW = CGFloat(map.columns) * map.cellSize.width
-        let contentH = CGFloat(map.rows) * map.cellSize.height
-        guard contentW > 0 && contentH > 0 else { return }
-
-        // aspectFit: entire map visible; aspectFill: screen fully filled
-        let aspectFit = min(sceneSize.width / contentW, sceneSize.height / contentH)
-        let aspectFill = max(sceneSize.width / contentW, sceneSize.height / contentH)
+        let mapSize = map.pointSize
+        let aspectFit = min(sceneSize.width / mapSize.width, sceneSize.height / mapSize.height)
+        let aspectFill = max(sceneSize.width / mapSize.width, sceneSize.height / mapSize.height)
 
         map.minimumZoom = aspectFit
         map.maximumZoom = 4.0 * aspectFill
