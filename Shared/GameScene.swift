@@ -6,11 +6,9 @@
 //
 
 import SpriteKit
-#if os(iOS)
 import UIKit
-#endif
 
-class GameScene: SKScene {
+class GameScene: SKScene, UIGestureRecognizerDelegate {
     var map: Level1Map!
     private var lastUpdateTime: TimeInterval = 0
     private var pinchStartScale: CGFloat = 1.0
@@ -38,38 +36,20 @@ class GameScene: SKScene {
     }
 }
 
-#if os(iOS) || os(tvOS)
 extension GameScene {
     override func didMove(to view: SKView) {
         super.didMove(to: view)
-        #if os(iOS)
-        let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
-        view.addGestureRecognizer(pinch)
-        #endif
+        let pinchGR = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        pinchGR.delegate = self
+        view.addGestureRecognizer(pinchGR)
+        let panGR = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        panGR.minimumNumberOfTouches = 1
+        panGR.maximumNumberOfTouches = 2
+        panGR.allowedScrollTypesMask = .all
+        panGR.delegate = self
+        view.addGestureRecognizer(panGR)
     }
 
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        lastPanLocation = nil
-    }
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        // Only handle single-finger panning to avoid conflict with pinch
-        if let count = event?.allTouches?.count, count > 1 { return }
-        guard let touch = touches.first else { return }
-        let location = touch.location(in: self)
-        if let last = lastPanLocation {
-            let delta = location - last
-            map.node.position += delta
-            clampMapPosition()
-        }
-        lastPanLocation = location
-    }
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let count = event?.allTouches?.count, count > 1 { return }
-        guard let touch = touches.first else { return }
-        lastPanLocation = touch.location(in: self)
-    }
-
-    #if os(iOS)
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
         case .began:
@@ -92,25 +72,34 @@ extension GameScene {
             break
         }
     }
-    #endif
-}
-#endif
 
-#if os(OSX)
-extension GameScene {
-    override func mouseDown(with event: NSEvent) { lastPanLocation = event.location(in: self) }
-    override func mouseDragged(with event: NSEvent) {
-        let location = event.location(in: self)
-        if let last = lastPanLocation {
-            let delta = location - last
+    @objc private func handlePan(_ recognizer: UIPanGestureRecognizer) {
+        guard let view = self.view else { return }
+        switch recognizer.state {
+        case .began, .changed:
+            let t = recognizer.translation(in: view)
+            // Convert translation vector from view space to scene space via two points
+            let p0 = convertPoint(fromView: .zero)
+            let p1 = convertPoint(fromView: CGPoint(x: t.x, y: t.y))
+            let delta = p1 - p0
             map.node.position += delta
+            recognizer.setTranslation(.zero, in: view)
             clampMapPosition()
+        default:
+            break
         }
-        lastPanLocation = location
     }
-    override func mouseUp(with event: NSEvent) { lastPanLocation = nil }
 }
-#endif
+
+// MARK: - Gesture Recognizer Delegate
+extension GameScene {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Allow pinch and two-finger pan to work together
+        let pinchAndPan = (gestureRecognizer is UIPinchGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) ||
+                          (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is UIPinchGestureRecognizer)
+        return pinchAndPan
+    }
+}
 
 // MARK: - Map Bounds
 private extension GameScene {
