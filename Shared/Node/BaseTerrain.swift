@@ -1,5 +1,5 @@
 //
-//  Map.swift
+//  BaseTerrain.swift
 //  RushDefense iOS
 //
 //  Created by Luke Zhao on 9/7/25.
@@ -7,7 +7,7 @@
 
 import SpriteKit
 
-class Map: SKNode {
+class BaseTerrain: SKNode {
     let tileMap: SKTileMapNode
     let baseMap: SKTileMapNode
     let columns: Int

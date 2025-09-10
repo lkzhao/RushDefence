@@ -28,7 +28,8 @@ class TurretVisualComponent: VisualComponent {
         }
         
         let entityPosition = entity?.node.position ?? .zero
-        let targetDirection = (target.node.position - entityPosition).normalized()
+        let targetPosition = target.node.position
+        let targetDirection = (targetPosition - entityPosition).normalized()
         
         // Only update if direction changed significantly
         if lastTargetDirection.distance(targetDirection) > 0.1 {
@@ -52,4 +53,3 @@ class TurretVisualComponent: VisualComponent {
         sprite.size = texture.size()
     }
 }
-

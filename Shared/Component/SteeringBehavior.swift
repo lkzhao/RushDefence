@@ -38,8 +38,7 @@ class AvoidBehavior: SteeringBehavior {
     }
 
     func computeForce(for component: MoveComponent, dt: CGFloat) -> CGPoint {
-        guard let selfEntity = component.entity,
-              let scene = selfEntity.scene else { return .zero }
+        guard let selfEntity = component.entity else { return .zero }
 
         // Only enemies avoid, and only from buildings and workers.
         guard selfEntity.entityType.contains(.enemy) else { return .zero }
@@ -48,7 +47,8 @@ class AvoidBehavior: SteeringBehavior {
         var force = CGPoint.zero
         let selfRadius = selfEntity.collisionRadius
 
-        for other in scene.entities {
+        guard let all = selfEntity.map?.entities else { return .zero }
+        for other in all {
             if other === selfEntity { continue }
             let otherType = other.entityType
 

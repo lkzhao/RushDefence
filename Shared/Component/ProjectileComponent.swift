@@ -22,8 +22,7 @@ class ProjectileComponent: Component {
     }
 
     override func update(deltaTime seconds: TimeInterval) {
-        guard seconds > 0, let entity = entity,
-              let scene = entity.scene else { return }
+        guard seconds > 0, let entity = entity else { return }
 
         // Track distance; MoveComponent integrates position already.
         if let v = entity.moveComponent?.velocity { traveled += v.length * CGFloat(seconds) }
@@ -33,8 +32,8 @@ class ProjectileComponent: Component {
             let v = entity.moveComponent?.velocity ?? .zero
             let dir = v.length > 0 ? v.normalized() : CGPoint(x: 1, y: 0)
             let effectNode = EffectNode(position: pos, direction: dir)
-            scene.addChild(effectNode)
-            entity.removeFromScene()
+            entity.map?.node.addChild(effectNode)
+            entity.removeFromMap()
             return
         }
 
@@ -42,10 +41,12 @@ class ProjectileComponent: Component {
         let myPos = entity.node.position
         let myRadius = entity.collisionRadius
 
-        for other in scene.entities {
+        guard let all = entity.map?.entities else { return }
+        for other in all {
             if other.entityType.contains(.projectile) { continue }
             if !isValidTarget(other) { continue }
 
+            // Same parent => same coordinate space
             let otherPos = other.node.position
             let offset = otherPos - myPos
             let dist = offset.length
@@ -62,8 +63,8 @@ class ProjectileComponent: Component {
 
                 // Impact effect aligned with projectile direction at projectile's hit position
                 let effectNode = EffectNode(position: myPos, direction: dir)
-                scene.addChild(effectNode)
-                entity.removeFromScene()
+                entity.map?.node.addChild(effectNode)
+                entity.removeFromMap()
                 break
             }
         }

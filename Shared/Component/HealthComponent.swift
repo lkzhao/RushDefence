@@ -39,7 +39,7 @@ class HealthComponent: Component {
                 visual.despawn()
                 entity?.moveComponent?.target = nil
             } else if let entity = entity {
-                entity.removeFromScene()
+                entity.removeFromMap()
             }
         }
         updateHealthBarProgress()

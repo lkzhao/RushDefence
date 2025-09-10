@@ -30,10 +30,12 @@ class PortalSpawnEnemyComponent: Component {
     }
 
     private func spawnEnemy() {
-        guard let scene = entity?.node.scene as? GameScene else { return }
+        guard let map = entity?.map else { return }
         let enemy = enemyFactory()
         enemy.moveComponent?.position = entity?.node.position ?? .zero
-        enemy.moveComponent?.target = scene.altar.node.position
-        scene.addEntity(enemy)
+        if let altar = map.entities.compactMap({ $0 as? Altar }).first {
+            enemy.moveComponent?.target = altar.node.position
+        }
+        map.addEntity(enemy)
     }
 }

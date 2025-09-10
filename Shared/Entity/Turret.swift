@@ -6,6 +6,7 @@
 //
 
 class Turret: Entity {
+    override var gridSize: GridSize { GridSize(w: 2, h: 2) }
     override init() {
         super.init()
         entityType = [.building, .ally]

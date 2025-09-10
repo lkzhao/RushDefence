@@ -32,7 +32,7 @@ class TrailComponent: Component {
         timeSinceLastSpawn = 0
 
         guard let entity = entity,
-              let parent = entity.node.parent else { return }
+              let parent = entity.map?.node else { return }
 
         let node = SKSpriteNode(texture: texture)
         node.position = entity.node.position

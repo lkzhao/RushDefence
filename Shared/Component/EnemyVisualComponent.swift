@@ -46,7 +46,7 @@ class EnemyVisualComponent: VisualComponent {
         let frames = TextureCache.shared.textures(for: "\(texturePrefix)\(textureSuffix)")
         sprite.removeAllActions()
         let death = SKAction.animate(with: frames, timePerFrame: timePerFrame, resize: false, restore: false)
-        let remove = SKAction.run { self.entity?.removeFromScene() }
+        let remove = SKAction.run { self.entity?.removeFromMap() }
         let sequence = SKAction.sequence([death, remove])
         sprite.run(sequence)
     }

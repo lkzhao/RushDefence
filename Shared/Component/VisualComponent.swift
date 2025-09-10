@@ -10,7 +10,7 @@ class VisualComponent: Component {
     let sprite = SKSpriteNode()
 
     func spawn() {}
-    func despawn() { entity?.removeFromScene() }
+    func despawn() { entity?.removeFromMap() }
 }
 
 extension Entity {

@@ -55,7 +55,7 @@ class IdleSpawnVisualComponent: VisualComponent {
         }
 
         let reverseSpawn = SKAction.animate(with: reversedFrames, timePerFrame: timePerFrame, resize: false, restore: false)
-        let remove = SKAction.run { [weak self] in self?.entity?.removeFromScene() }
+        let remove = SKAction.run { [weak self] in self?.entity?.removeFromMap() }
         let sequence = SKAction.sequence([reverseSpawn, remove])
         sprite.run(sequence, withKey: "despawn")
     }

@@ -6,6 +6,7 @@
 //
 
 class Portal: Entity {
+    override var gridSize: GridSize { GridSize(w: 3, h: 3) }
     override init() {
         super.init()
         entityType = [.building]

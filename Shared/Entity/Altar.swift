@@ -6,6 +6,7 @@
 //
 
 class Altar: Entity {
+    override var gridSize: GridSize { GridSize(w: 2, h: 2) }
     // MARK: - Lifecycle
     override init() {
         super.init()

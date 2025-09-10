@@ -9,22 +9,19 @@ import SpriteKit
 
 class Entity {
     let node = SKNode()
-    weak var scene: EntityScene?
+    weak var map: Map?
     var entityType: EntityType = []
     var collisionRadius: CGFloat = 8
+    // Footprint in grid cells when placed on a map.
+    // Override in subclasses for buildings larger than 1x1.
+    var gridSize: GridSize { GridSize(w: 1, h: 1) }
 
     private(set) var components: [Component] = []
 
-    // MARK: - Scene lifecycle
-    func didAddToScene(_ scene: EntityScene) {
-        self.scene = scene
-        scene.addChild(node)
-    }
-
-    func removeFromScene() {
-        node.removeFromParent()
-        scene?.removeEntity(self)
-    }
+    // MARK: - Map lifecycle
+    func didAddToMap(_ map: Map) {}
+    func willRemoveFromMap(_ map: Map) {}
+    func removeFromMap() { map?.removeEntity(self) }
 
     // MARK: - Components
     func addComponent(_ component: Component) {
@@ -50,8 +47,6 @@ class Entity {
 
     // MARK: - Update
     func update(deltaTime seconds: TimeInterval) {
-        for component in components {
-            component.update(deltaTime: seconds)
-        }
+        for component in components { component.update(deltaTime: seconds) }
     }
 }

@@ -29,15 +29,17 @@ class AttackComponent: Component {
     }
 
     func performAttack() {
-        guard let entity = entity,
-              let scene = entity.node.scene as? GameScene else { return }
+        guard let entity = entity else { return }
 
-        if let target, target.node.position.distance(entity.node.position) > attackRange || target.healthComponent?.currentHealth ?? 0 <= 0 {
+        if let target,
+           target.node.position.distance(entity.node.position) > attackRange ||
+           target.healthComponent?.currentHealth ?? 0 <= 0 {
             self.target = nil
         }
 
         if target == nil {
-            let candidates = scene.entities.filter { other in
+            guard let all = entity.map?.entities else { return }
+            let candidates = all.filter { other in
                 // Exclude self and projectiles
                 guard other !== entity, !other.entityType.contains(.projectile) else { return false }
                 // Must have health and be alive to be targeted
@@ -58,7 +60,9 @@ class AttackComponent: Component {
 
         if let target {
             // Fire a simple projectile toward the current target.
-            let toTarget = target.node.position - entity.node.position
+            let origin = entity.node.position
+            let targetPos = target.node.position
+            let toTarget = targetPos - origin
             let dir = toTarget.length > 0 ? toTarget / toTarget.length : CGPoint(x: 1, y: 0)
             let projectile = Projectile(speed: projectileSpeed,
                                         maxDistance: projectileMaxDistance,
@@ -66,8 +70,8 @@ class AttackComponent: Component {
                                         knockback: knockback,
                                         direction: dir,
                                         ownerType: entity.entityType)
-            projectile.moveComponent?.position = entity.node.position
-            scene.addEntity(projectile)
+            projectile.moveComponent?.position = origin
+            entity.map?.addEntity(projectile)
         }
     }
 }
