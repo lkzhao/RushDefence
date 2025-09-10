@@ -8,7 +8,7 @@
 import SpriteKit
 import UIKit
 
-class GameScene: SKScene, UIGestureRecognizerDelegate {
+class GameScene: SKScene {
     var map: Level1Map!
     private var lastUpdateTime: TimeInterval = 0
     private var pinchStartScale: CGFloat = 1.0
@@ -53,6 +53,7 @@ extension GameScene {
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
         case .began:
+            print("Pinch began")
             pinchStartScale = map.zoom
             if let view = self.view {
                 let pView = recognizer.location(in: view)
@@ -60,7 +61,7 @@ extension GameScene {
                 pinchAnchorScene = pScene
                 pinchAnchorLocal = map.node.convert(pScene, from: self)
             }
-        case .changed, .ended, .cancelled:
+        case .changed:
             let newScale = pinchStartScale * recognizer.scale
             map.setZoom(newScale)
             // Adjust position so the pinch anchor remains visually stable
@@ -76,7 +77,9 @@ extension GameScene {
     @objc private func handlePan(_ recognizer: UIPanGestureRecognizer) {
         guard let view = self.view else { return }
         switch recognizer.state {
-        case .began, .changed:
+        case .began:
+            print("Pan began")
+        case .changed:
             let t = recognizer.translation(in: view)
             // Convert translation vector from view space to scene space via two points
             let p0 = convertPoint(fromView: .zero)
@@ -92,12 +95,13 @@ extension GameScene {
 }
 
 // MARK: - Gesture Recognizer Delegate
-extension GameScene {
+extension GameScene: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        // Allow pinch and two-finger pan to work together
-        let pinchAndPan = (gestureRecognizer is UIPinchGestureRecognizer && otherGestureRecognizer is UIPanGestureRecognizer) ||
-                          (gestureRecognizer is UIPanGestureRecognizer && otherGestureRecognizer is UIPinchGestureRecognizer)
-        return pinchAndPan
+        return true
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 }
 
