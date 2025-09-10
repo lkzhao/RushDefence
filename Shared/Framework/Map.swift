@@ -70,6 +70,10 @@ class Map {
         }
     }
 
+    // Dynamic zoom limits, to be set by GameScene
+    var minimumZoom: CGFloat = 0.25
+    var maximumZoom: CGFloat = 4.0
+
     init(columns: Int, rows: Int) {
         self.columns = columns
         self.rows = rows
@@ -158,5 +162,7 @@ class Map {
     }
 
     // MARK: - Zoom
-    func setZoom(_ value: CGFloat) { zoom = max(0.25, min(value, 4.0)) }
+    func setZoom(_ value: CGFloat) {
+        zoom = value.clamp(minimumZoom, maximumZoom)
+    }
 }

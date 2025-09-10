@@ -7,6 +7,7 @@
 
 import SpriteKit
 import UIKit
+import BaseToolbox
 
 class GameScene: SKScene {
     var map: Level1Map!
@@ -27,7 +28,7 @@ class GameScene: SKScene {
     }
 
     private func commonInit() {
-        scaleMode = .aspectFill
+        scaleMode = .resizeFill
 
         // Create Level1Map and add its node (Level1Map places buildings and spawners)
         map = Level1Map()
@@ -107,6 +108,27 @@ extension GameScene: UIGestureRecognizerDelegate {
 
 // MARK: - Map Bounds
 private extension GameScene {
+    func updateZoomLimits() {
+        guard map != nil else { return }
+        let sceneSize = size
+
+        // Content size of the map in its unscaled coordinate space
+        let contentW = CGFloat(map.columns) * map.cellSize.width
+        let contentH = CGFloat(map.rows) * map.cellSize.height
+        guard contentW > 0 && contentH > 0 else { return }
+
+        // aspectFit: entire map visible; aspectFill: screen fully filled
+        let aspectFit = min(sceneSize.width / contentW, sceneSize.height / contentH)
+        let aspectFill = max(sceneSize.width / contentW, sceneSize.height / contentH)
+
+        map.minimumZoom = aspectFit
+        map.maximumZoom = 4.0 * aspectFill
+
+        // Clamp current zoom and position to new bounds
+        map.setZoom(map.zoom)
+        clampMapPosition()
+    }
+
     func clampMapPosition() {
         guard map != nil else { return }
         let sceneSize = size
@@ -138,6 +160,14 @@ extension GameScene {
         let dt = currentTime - lastUpdateTime
         map.update(deltaTime: dt)
         lastUpdateTime = currentTime
+    }
+}
+
+// MARK: - Size Changes
+extension GameScene {
+    override func didChangeSize(_ oldSize: CGSize) {
+        super.didChangeSize(oldSize)
+        updateZoomLimits()
     }
 }
 
