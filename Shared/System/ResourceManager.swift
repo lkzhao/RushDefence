@@ -8,7 +8,7 @@
 import Foundation
 
 class ResourceManager {
-    private(set) var gold: Int = 0
+    private(set) var gold: Int = 500
     
     func addGold(_ amount: Int) {
         gold += amount
