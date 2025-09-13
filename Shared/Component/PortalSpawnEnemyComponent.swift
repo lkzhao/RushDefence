@@ -34,6 +34,14 @@ class PortalSpawnEnemyComponent: Component {
         guard let altar = map.entities.compactMap({ $0 as? Altar }).first else { return }
         let enemy = enemyFactory()
         enemy.moveComponent?.position = entity?.node.position ?? .zero
+        
+        // Set up pathfinding target for RouteSeekBehavior
+        let altarGridLocation = map.grid(for: altar.node.position)
+        if let routeSeek = (enemy as? Enemy)?.routeSeekBehavior {
+            routeSeek.targetLocation = altarGridLocation
+        }
+        
+        // Also set direct target as fallback
         enemy.moveComponent?.target = altar.node.position
         map.addEntity(enemy)
     }

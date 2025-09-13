@@ -74,3 +74,50 @@ class AvoidBehavior: SteeringBehavior {
         return force
     }
 }
+
+/// Flow field-based pathfinding behavior that avoids buildings using pre-computed vector fields
+class RouteSeekBehavior: SteeringBehavior {
+    var targetLocation: GridLocation?
+    var fallbackBehavior: SeekBehavior = SeekBehavior()
+    
+    func computeForce(for component: MoveComponent, dt: CGFloat) -> CGPoint {
+        guard let map = component.entity?.map,
+              let targetLocation = targetLocation else {
+            // Fallback to direct seek when no map or target
+            return fallbackBehavior.computeForce(for: component, dt: dt)
+        }
+        
+        // Get flow field for target
+        guard let flowField = map.flowFieldManager.getFlowField(to: targetLocation) else {
+            // Fallback if flow field generation fails
+            return fallbackBehavior.computeForce(for: component, dt: dt)
+        }
+        
+        let currentPos = component.position
+        let targetPoint = map.centerPointFor(location: targetLocation)
+        
+        // Check if we're close enough to target for direct arrival behavior
+        let distanceToTarget = (targetPoint - currentPos).length
+        if distanceToTarget <= component.arrivalRadius {
+            // Use direct seek for final approach
+            let originalTarget = component.target
+            component.target = targetPoint
+            let arrivalForce = fallbackBehavior.computeForce(for: component, dt: dt)
+            component.target = originalTarget
+            return arrivalForce
+        }
+        
+        // Sample flow field direction at current position
+        let flowDirection = flowField.getDirection(at: currentPos, cellSize: map.cellSize)
+        
+        // Check if flow field gives valid direction
+        guard flowDirection.length > 0 else {
+            // Fallback to direct seek if flow field doesn't provide direction
+            return fallbackBehavior.computeForce(for: component, dt: dt)
+        }
+        
+        // Apply movement force in flow field direction
+        let normalizedDirection = flowDirection.normalized()
+        return normalizedDirection * component.movementForce
+    }
+}

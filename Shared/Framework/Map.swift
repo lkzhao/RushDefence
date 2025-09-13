@@ -65,11 +65,13 @@ class Map {
     let rows: Int
     let cellSize: CGSize
     let resourceManager = ResourceManager()
+    let flowFieldManager: FlowFieldManager
     
     weak var delegate: MapDelegate?
 
     private(set) var entities: [Entity] = []
     private var occupied: [GridLocation: Entity] = [:]
+    private var buildingRects: [ObjectIdentifier: GridRect] = [:]
 
     private(set) var zoom: CGFloat = 1.0 {
         didSet {
@@ -91,8 +93,10 @@ class Map {
         self.rows = rows
         self.terrain = BaseTerrain(columns: columns, rows: rows)
         self.cellSize = terrain.tileSize
+        self.flowFieldManager = FlowFieldManager(map: nil)
         terrain.zPosition = -1
         node.addChild(terrain)
+        flowFieldManager.map = self
     }
 
     // MARK: - Entity Management
@@ -116,6 +120,12 @@ class Map {
             removed.willRemoveFromMap(self)
             removed.node.removeFromParent()
             removed.map = nil
+            
+            // Remove building obstacle for pathfinding
+            if removed.entityType.contains(.building) {
+                removeBuildingObstacle(removed)
+            }
+            
             // Free occupied cells for this entity
             let toRemove = occupied.filter { $0.value === removed }.map { $0.key }
             for key in toRemove { occupied.removeValue(forKey: key) }
@@ -158,6 +168,12 @@ class Map {
         occupy(rect, with: entity)
         entity.node.position = centerPointFor(rect: rect)
         addEntity(entity)
+        
+        // Track building obstacle for pathfinding
+        if entity.entityType.contains(.building) {
+            addBuildingObstacle(entity, rect: rect)
+        }
+        
         return true
     }
 
@@ -182,5 +198,21 @@ class Map {
     // MARK: - Zoom
     func setZoom(_ value: CGFloat) {
         zoom = value.clamp(minimumZoom, maximumZoom)
+    }
+    
+    // MARK: - Building Obstacle Management
+    func getObstacles() -> [GridRect] {
+        return Array(buildingRects.values)
+    }
+    
+    private func addBuildingObstacle(_ entity: Entity, rect: GridRect) {
+        buildingRects[ObjectIdentifier(entity)] = rect
+        flowFieldManager.invalidateFlowFields()
+    }
+    
+    private func removeBuildingObstacle(_ entity: Entity) {
+        if buildingRects.removeValue(forKey: ObjectIdentifier(entity)) != nil {
+            flowFieldManager.invalidateFlowFields()
+        }
     }
 }
