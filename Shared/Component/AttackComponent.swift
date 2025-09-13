@@ -17,18 +17,16 @@ class AttackComponent: Component {
     var targetEntityType: EntityType = [.enemy]
     var target: Entity?
     var knockback: CGFloat = 20 // interpreted as impulse magnitude
-    var projectileSpeed: CGFloat = 400
-    var projectileMaxDistance: CGFloat = 1000
 
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
         if lastUpdateTime - lastTryAttackTime >= attackInterval {
             lastTryAttackTime = lastUpdateTime
-            performAttack()
+            tryAttack()
         }
     }
 
-    func performAttack() {
+    func tryAttack() {
         guard let entity = entity else { return }
 
         if let target,
@@ -59,20 +57,12 @@ class AttackComponent: Component {
         }
 
         if let target {
-            // Fire a simple projectile toward the current target.
-            let origin = entity.node.position
-            let targetPos = target.node.position
-            let toTarget = targetPos - origin
-            let dir = toTarget.length > 0 ? toTarget / toTarget.length : CGPoint(x: 1, y: 0)
-            let projectile = Projectile(speed: projectileSpeed,
-                                        maxDistance: projectileMaxDistance,
-                                        damage: attackDamage,
-                                        knockback: knockback,
-                                        direction: dir,
-                                        ownerType: entity.entityType)
-            projectile.moveComponent?.position = origin
-            entity.map?.addEntity(projectile)
-            lastAttackTime = lastTryAttackTime
+            performAttack(on: target)
         }
+    }
+    
+    // Subclasses should override this method to implement their specific attack behavior
+    func performAttack(on target: Entity) {
+        // Base implementation does nothing - subclasses should override
     }
 }
