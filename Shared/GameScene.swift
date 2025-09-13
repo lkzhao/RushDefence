@@ -58,6 +58,10 @@ extension GameScene {
         panGR.allowedScrollTypesMask = .all
         panGR.delegate = self
         view.addGestureRecognizer(panGR)
+        let tapGR = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        tapGR.numberOfTapsRequired = 1
+        tapGR.delegate = self
+        view.addGestureRecognizer(tapGR)
     }
 
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
@@ -102,11 +106,23 @@ extension GameScene {
             break
         }
     }
+
+    @objc private func handleTap(_ recognizer: UITapGestureRecognizer) {
+        guard let view = self.view else { return }
+        let tapLocation = recognizer.location(in: view)
+        let scenePoint = convertPoint(fromView: tapLocation)
+        let mapPoint = map.node.convert(scenePoint, from: self)
+        attemptTurretPlacement(at: mapPoint)
+    }
 }
 
 // MARK: - Gesture Recognizer Delegate
 extension GameScene: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // Allow pan and pinch to work together, but not tap with pan/pinch
+        if gestureRecognizer is UITapGestureRecognizer || otherGestureRecognizer is UITapGestureRecognizer {
+            return false
+        }
         return true
     }
 
@@ -192,6 +208,36 @@ extension GameScene {
         super.didChangeSize(oldSize)
         updateZoomLimits()
         goldLabel?.position = CGPoint(x: size.width - 20, y: size.height - 20)
+    }
+}
+
+// MARK: - Turret Placement
+private extension GameScene {
+    func attemptTurretPlacement(at point: CGPoint) {
+        let gridLocation = map.grid(for: point)
+        let turretCost = Turret.cost
+        let turretSize = GridSize(w: 2, h: 2)
+        let placementRect = GridRect(origin: gridLocation, size: turretSize)
+        
+        // Check if placement is valid
+        guard map.resourceManager.currentGold >= turretCost,
+              map.gridBounds.contains(placementRect),
+              map.isFree(placementRect) else {
+            print("Cannot place turret: insufficient gold, out of bounds, or location occupied")
+            return
+        }
+        
+        // Create and place turret
+        let turret = Turret()
+        guard map.placeBuilding(turret, at: gridLocation) else {
+            print("Failed to place turret")
+            return
+        }
+        
+        // Deduct cost and spawn visual
+        map.resourceManager.spendGold(turretCost)
+        turret.visualComponent?.spawn()
+        print("Turret placed at \(gridLocation) for \(turretCost) gold")
     }
 }
 

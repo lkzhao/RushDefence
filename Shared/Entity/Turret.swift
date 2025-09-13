@@ -6,6 +6,7 @@
 //
 
 class Turret: Entity {
+    static let cost = 100
     override var gridSize: GridSize { GridSize(w: 2, h: 2) }
     override init() {
         super.init()
