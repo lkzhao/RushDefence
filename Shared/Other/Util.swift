@@ -52,3 +52,38 @@ extension SIMD2<Float> {
         CGPoint(x: CGFloat(x), y: CGFloat(y))
     }
 }
+
+// MARK: - BaseToolbox-style extensions
+extension CGFloat {
+    func clamp(_ min: CGFloat, _ max: CGFloat) -> CGFloat {
+        Swift.min(Swift.max(self, min), max)
+    }
+}
+
+extension CGPoint {
+    static func + (lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    }
+    
+    static func - (lhs: CGPoint, rhs: CGPoint) -> CGPoint {
+        CGPoint(x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+    }
+    
+    static func * (lhs: CGPoint, rhs: CGFloat) -> CGPoint {
+        CGPoint(x: lhs.x * rhs, y: lhs.y * rhs)
+    }
+    
+    static func / (lhs: CGPoint, rhs: CGFloat) -> CGPoint {
+        CGPoint(x: lhs.x / rhs, y: lhs.y / rhs)
+    }
+    
+    static func += (lhs: inout CGPoint, rhs: CGPoint) {
+        lhs = lhs + rhs
+    }
+}
+
+extension CGSize {
+    static func * (lhs: CGSize, rhs: CGSize) -> CGSize {
+        CGSize(width: lhs.width * rhs.width, height: lhs.height * rhs.height)
+    }
+}

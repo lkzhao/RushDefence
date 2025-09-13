@@ -7,7 +7,6 @@
 
 import SpriteKit
 import UIKit
-import BaseToolbox
 
 class GameScene: SKScene {
     var map: Level1Map!
