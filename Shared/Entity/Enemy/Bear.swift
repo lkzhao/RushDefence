@@ -22,7 +22,7 @@ class Bear: Entity {
         addComponent(HealthComponent(maxHealth: 100))
         addComponent(IdleAttackRunVisualComponent(texturePrefix: "Enemies/Bear"))
         // Enemy can attack ally buildings at short range
-        addComponent(AttackComponent().then({ component in
+        addComponent(MeleeAttackComponent().then({ component in
             component.attackRange = 10
             component.attackDamage = 2
             component.targetEntityType = [.building]

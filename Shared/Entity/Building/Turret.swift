@@ -17,7 +17,7 @@ class Turret: Entity {
         collisionRadius = 20
         addComponent(HealthComponent(maxHealth: 200))
         addComponent(TurretVisualComponent(turretType: turretType))
-        addComponent(AttackComponent().then({ component in
+        addComponent(ProjectileAttackComponent().then({ component in
             component.attackRange = 120
             component.attackDamage = 30
             component.attackInterval = 0.8
