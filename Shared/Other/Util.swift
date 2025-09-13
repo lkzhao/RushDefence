@@ -87,3 +87,12 @@ extension CGSize {
         CGSize(width: lhs.width * rhs.width, height: lhs.height * rhs.height)
     }
 }
+
+// MARK: - Functional helpers
+extension NSObject {
+    @discardableResult
+    func then(_ block: (Self) throws -> Void) rethrows -> Self {
+        try block(self)
+        return self
+    }
+}
