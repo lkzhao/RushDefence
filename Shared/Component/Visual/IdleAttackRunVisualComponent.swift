@@ -15,11 +15,18 @@ class IdleAttackRunVisualComponent: VisualComponent {
 
     enum State {
         case idle, attack, run
-        var textureSuffix: String {
+        func textureSuffix(for texturePrefix: String) -> String {
             switch self {
             case .idle: return "Idle"
             case .attack: return "Attack"
-            case .run: return "Run"
+            case .run: 
+                // Auto-detect between Run and Walk assets
+                let runTextures = TextureCache.shared.textures(for: "\(texturePrefix)_Run")
+                if !runTextures.isEmpty {
+                    return "Run"
+                } else {
+                    return "Walk"
+                }
             }
         }
     }
@@ -39,7 +46,7 @@ class IdleAttackRunVisualComponent: VisualComponent {
         guard let moveComponent = entity?.component(ofType: MoveComponent.self) else { return }
         guard let attackComponent = entity?.component(ofType: AttackComponent.self) else { return }
         state = attackComponent.lastAttackTime + 1.0 > lastUpdateTime ? .attack : (moveComponent.isMoving ? .run : .idle)
-        let textureSuffix = state.textureSuffix
+        let textureSuffix = state.textureSuffix(for: texturePrefix)
         let frames = TextureCache.shared.textures(for: "\(texturePrefix)_\(textureSuffix)")
         sprite.xScale = moveComponent.direction.x < 0 ? -1 : 1
         if lastUpdateTime > lastTextureUpdateTime + timePerFrame {
