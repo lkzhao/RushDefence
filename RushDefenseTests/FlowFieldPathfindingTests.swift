@@ -71,16 +71,21 @@ struct FlowFieldPathfindingTests {
         
         let flowField = FlowField(target: target, mapSize: mapSize, obstacles: obstacles)
         
-        // Test world coordinate lookup
-        let worldPoint = CGPoint(x: 0, y: 0) // Center of map
+        // Test world coordinate lookup at a non-target location
+        let worldPoint = CGPoint(x: -64, y: -64) // Maps to grid location (0, 0)
         let direction = flowField.getDirection(at: worldPoint, cellSize: cellSize)
         #expect(direction.length > 0, "Should get valid direction from world coordinates")
         
         // Test that grid and world lookups are consistent
-        let gridDirection = flowField.getDirection(at: GridLocation(x: 2, y: 2))
-        let worldDirection = flowField.getDirection(at: CGPoint(x: 0, y: 0), cellSize: cellSize)
+        let gridDirection = flowField.getDirection(at: GridLocation(x: 0, y: 0))
+        let worldDirection = flowField.getDirection(at: CGPoint(x: -64, y: -64), cellSize: cellSize)
         let diff = (gridDirection - worldDirection).length
         #expect(diff < 0.1, "Grid and world coordinate lookups should be consistent")
+        
+        // Test that target location correctly maps to zero direction
+        let targetWorldPoint = CGPoint(x: 0, y: 0) // Maps to target at (2, 2)
+        let targetDirection = flowField.getDirection(at: targetWorldPoint, cellSize: cellSize)
+        #expect(targetDirection.length < 0.1, "Target location should have near-zero direction")
     }
 
     // MARK: - FlowFieldManager Tests
