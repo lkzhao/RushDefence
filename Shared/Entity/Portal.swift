@@ -11,8 +11,8 @@ class Portal: Entity {
         super.init()
         entityType = [.building]
         collisionRadius = 34
-        addComponent(IdleSpawnVisualComponent(idleTexture: "Portal1_Idle",
-                                              spawnTexture: "Portal1_Start"))
+        addComponent(IdleSpawnVisualComponent(idleTexture: "Objects/Portal1_Idle",
+                                              spawnTexture: "Objects/Portal1_Start"))
     }
 
     required init?(coder aDecoder: NSCoder) {

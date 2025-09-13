@@ -12,14 +12,13 @@ class Level1Map: Map {
     let worker = Worker()
 
     init() {
-        // 1/4 area (64x32)
-        super.init(columns: 64, rows: 32)
+        super.init(columns: 48, rows: 32)
 
         // Add entities
         addEntity(worker)
         _ = placeBuilding(portal, at: GridLocation(x: 8, y: 20))
-        _ = placeBuilding(altar, at: GridLocation(x: 48, y: 16))
-        _ = placeBuilding(turret, at: GridLocation(x: 32, y: 16))
+        _ = placeBuilding(altar, at: GridLocation(x: 36, y: 16))
+        _ = placeBuilding(turret, at: GridLocation(x: 24, y: 16))
 
         // Spawn visuals and attach spawner after a brief delay
         let wait = SKAction.wait(forDuration: 2.0)

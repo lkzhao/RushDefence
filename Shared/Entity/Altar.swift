@@ -13,7 +13,7 @@ class Altar: Entity {
         entityType = [.building]
         collisionRadius = 16
         addComponent(HealthComponent(maxHealth: 300))
-        addComponent(IdleSpawnVisualComponent(idleTexture: "Altar_Idle", spawnTexture: "Altar_Start"))
+        addComponent(IdleSpawnVisualComponent(idleTexture: "Objects/Altar_Idle", spawnTexture: "Objects/Altar_Start"))
         visualComponent?.sprite.anchorPoint = CGPoint(x: 0.5, y: 0.3)
     }
 
