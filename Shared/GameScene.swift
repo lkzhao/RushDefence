@@ -16,6 +16,7 @@ class GameScene: SKScene {
     private var pinchAnchorScene: CGPoint = .zero
     private var pinchAnchorLocal: CGPoint = .zero
     private var goldLabel: SKLabelNode!
+    private var waveLabel: SKLabelNode!
     private var iconButtonRow: IconButtonRow!
     private var restartButton: SKShapeNode!
 
@@ -45,6 +46,9 @@ class GameScene: SKScene {
         
         // Setup gold display UI
         setupGoldDisplay()
+        
+        // Setup wave counter UI
+        setupWaveDisplay()
         
         // Setup restart button UI
         setupRestartButton()
@@ -303,6 +307,25 @@ private extension GameScene {
     }
 }
 
+// MARK: - Wave Display
+private extension GameScene {
+    func setupWaveDisplay() {
+        waveLabel = SKLabelNode(fontNamed: "Arial-Bold")
+        waveLabel.fontSize = 24
+        waveLabel.fontColor = .cyan
+        waveLabel.text = "Wave: 1/20"
+        waveLabel.horizontalAlignmentMode = .right
+        waveLabel.verticalAlignmentMode = .top
+        waveLabel.position = CGPoint(x: size.width - 20, y: size.height - 60)
+        waveLabel.zPosition = 1000
+        addChild(waveLabel)
+    }
+    
+    func updateWaveDisplay() {
+        waveLabel.text = "Wave: \(map.currentWave)/\(map.totalWaves)"
+    }
+}
+
 // MARK: - Icon Buttons
 private extension GameScene {
     func setupIconButtonRow() {
@@ -344,6 +367,7 @@ extension GameScene {
         let dt = currentTime - lastUpdateTime
         map.update(deltaTime: dt)
         updateGoldDisplay()
+        updateWaveDisplay()
         lastUpdateTime = currentTime
     }
 }
@@ -354,6 +378,7 @@ extension GameScene {
         super.didChangeSize(oldSize)
         updateZoomLimits()
         goldLabel?.position = CGPoint(x: size.width - 20, y: size.height - 20)
+        waveLabel?.position = CGPoint(x: size.width - 20, y: size.height - 60)
         iconButtonRow?.position = CGPoint(x: size.width / 2, y: 60)
         restartButton?.position = CGPoint(x: 20, y: size.height - 50)
     }
