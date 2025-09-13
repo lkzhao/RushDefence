@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B17218272E6EA7F6000F45FA /* BaseToolbox in Frameworks */ = {isa = PBXBuildFile; productRef = B17218262E6EA7F6000F45FA /* BaseToolbox */; };
+		B1AD80542E75252900F11E4F /* RushDefenceDependencies in Frameworks */ = {isa = PBXBuildFile; productRef = B1AD80532E75252900F11E4F /* RushDefenceDependencies */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -21,7 +21,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		B17218242E6EA7F0000F45FA /* BaseToolbox */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = BaseToolbox; path = ../BaseToolbox; sourceTree = SOURCE_ROOT; };
 		B1AD7D4D2E7522FE00F11E4F /* RushDefenseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RushDefenseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1BC50752E6E3F2700854569 /* RushDefense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RushDefense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -35,6 +34,11 @@
 		B1AD7D4E2E7522FE00F11E4F /* RushDefenseTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = RushDefenseTests;
+			sourceTree = "<group>";
+		};
+		B1AD7FF42E75250500F11E4F /* Libs */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Libs;
 			sourceTree = "<group>";
 		};
 		B1BC50772E6E3F2700854569 /* iOS */ = {
@@ -56,7 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B17218272E6EA7F6000F45FA /* BaseToolbox in Frameworks */,
+				B1AD80542E75252900F11E4F /* RushDefenceDependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,8 +81,8 @@
 				B1BC50772E6E3F2700854569 /* iOS */,
 				B1AD7D4E2E7522FE00F11E4F /* RushDefenseTests */,
 				B1BC50762E6E3F2700854569 /* Products */,
-				B17218242E6EA7F0000F45FA /* BaseToolbox */,
 				B17218252E6EA7F6000F45FA /* Frameworks */,
+				B1AD7FF42E75250500F11E4F /* Libs */,
 			);
 			sourceTree = "<group>";
 		};
@@ -135,7 +139,7 @@
 			);
 			name = "RushDefense iOS";
 			packageProductDependencies = (
-				B17218262E6EA7F6000F45FA /* BaseToolbox */,
+				B1AD80532E75252900F11E4F /* RushDefenceDependencies */,
 			);
 			productName = "RushDefense iOS";
 			productReference = B1BC50752E6E3F2700854569 /* RushDefense.app */;
@@ -493,9 +497,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B17218262E6EA7F6000F45FA /* BaseToolbox */ = {
+		B1AD80532E75252900F11E4F /* RushDefenceDependencies */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = BaseToolbox;
+			productName = RushDefenceDependencies;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
