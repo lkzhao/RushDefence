@@ -5,6 +5,11 @@
 
 import SpriteKit
 
+// MARK: - Map Delegate
+protocol MapDelegate: AnyObject {
+    func mapAltarWasDestroyed(_ map: Map)
+}
+
 // MARK: - Grid Types
 struct GridLocation: Hashable { let x: Int; let y: Int }
 struct GridSize: Equatable { let w: Int; let h: Int }
@@ -60,6 +65,8 @@ class Map {
     let rows: Int
     let cellSize: CGSize
     let resourceManager = ResourceManager()
+    
+    weak var delegate: MapDelegate?
 
     private(set) var entities: [Entity] = []
     private var occupied: [GridLocation: Entity] = [:]
