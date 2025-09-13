@@ -35,12 +35,6 @@ class HealthComponent: Component {
         currentHealth -= amount
         if currentHealth <= 0 {
             currentHealth = 0
-            
-            // Check if this is an Altar being destroyed
-            if let altar = entity as? Altar {
-                altar.map?.delegate?.mapAltarWasDestroyed(altar.map!)
-            }
-            
             if let visual = entity?.components.compactMap({ $0 as? VisualComponent }).first {
                 visual.despawn()
                 entity?.moveComponent?.target = nil

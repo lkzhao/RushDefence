@@ -7,7 +7,7 @@ import SpriteKit
 
 // MARK: - Map Delegate
 protocol MapDelegate: AnyObject {
-    func mapAltarWasDestroyed(_ map: Map)
+    func gameOver()
 }
 
 // MARK: - Grid Types
@@ -107,6 +107,12 @@ class Map {
     func removeEntity(_ entity: Entity) {
         if let idx = entities.firstIndex(where: { $0 === entity }) {
             let removed = entities.remove(at: idx)
+            
+            // Check if this is an Altar being removed - triggers game over
+            if removed is Altar {
+                delegate?.gameOver()
+            }
+            
             removed.willRemoveFromMap(self)
             removed.node.removeFromParent()
             removed.map = nil

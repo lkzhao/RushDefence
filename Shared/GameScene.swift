@@ -17,8 +17,6 @@ class GameScene: SKScene {
     private var pinchAnchorLocal: CGPoint = .zero
     private var goldLabel: SKLabelNode!
     private var iconButtonRow: IconButtonRow!
-    private var gameOverOverlay: SKNode?
-    private var isGameOver = false
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -225,7 +223,6 @@ extension GameScene {
         updateZoomLimits()
         goldLabel?.position = CGPoint(x: size.width - 20, y: size.height - 20)
         iconButtonRow?.position = CGPoint(x: size.width / 2, y: 60)
-        updateGameOverOverlayPosition()
     }
 }
 
@@ -262,103 +259,15 @@ private extension GameScene {
 // MARK: - Game Over
 extension GameScene {
     func showGameOver() {
-        guard !isGameOver else { return }
-        isGameOver = true
-        
-        // Create semi-transparent background
-        let overlay = SKNode()
-        let background = SKShapeNode(rect: CGRect(origin: .zero, size: size))
-        background.fillColor = .black
-        background.alpha = 0.7
-        background.strokeColor = .clear
-        overlay.addChild(background)
-        
-        // Game Over label
-        let gameOverLabel = SKLabelNode(fontNamed: "Arial-Bold")
-        gameOverLabel.text = "GAME OVER"
-        gameOverLabel.fontSize = 48
-        gameOverLabel.fontColor = .red
-        gameOverLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 40)
-        gameOverLabel.horizontalAlignmentMode = .center
-        gameOverLabel.verticalAlignmentMode = .center
-        overlay.addChild(gameOverLabel)
-        
-        // Restart button
-        let restartButton = SKShapeNode(rect: CGRect(x: -80, y: -20, width: 160, height: 40), cornerRadius: 8)
-        restartButton.fillColor = .systemBlue
-        restartButton.strokeColor = .white
-        restartButton.lineWidth = 2
-        restartButton.position = CGPoint(x: size.width / 2, y: size.height / 2 - 40)
-        restartButton.name = "restartButton"
-        
-        let restartLabel = SKLabelNode(fontNamed: "Arial-Bold")
-        restartLabel.text = "RESTART"
-        restartLabel.fontSize = 20
-        restartLabel.fontColor = .white
-        restartLabel.position = CGPoint(x: 0, y: -6)
-        restartLabel.horizontalAlignmentMode = .center
-        restartLabel.verticalAlignmentMode = .center
-        restartButton.addChild(restartLabel)
-        
-        overlay.addChild(restartButton)
-        overlay.zPosition = 2000
-        gameOverOverlay = overlay
-        addChild(overlay)
-    }
-    
-    func restartGame() {
-        isGameOver = false
-        gameOverOverlay?.removeFromParent()
-        gameOverOverlay = nil
-        
-        // Remove current map
-        map.node.removeFromParent()
-        
-        // Create new map
-        map = Level1Map()
-        map.delegate = self
-        map.node.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        addChild(map.node)
-        updateZoomLimits()
-        let sceneSize = size
-        let mapSize = map.pointSize
-        let aspectFill = max(sceneSize.width / mapSize.width, sceneSize.height / mapSize.height)
-        map.setZoom(aspectFill)
-        
-        lastUpdateTime = 0
-    }
-    
-    private func updateGameOverOverlayPosition() {
-        guard let overlay = gameOverOverlay else { return }
-        if let background = overlay.children.first as? SKShapeNode {
-            background.path = CGPath(rect: CGRect(origin: .zero, size: size), transform: nil)
-        }
-        if overlay.children.count >= 2 {
-            overlay.children[1].position = CGPoint(x: size.width / 2, y: size.height / 2 + 40)
-        }
-        if overlay.children.count >= 3 {
-            overlay.children[2].position = CGPoint(x: size.width / 2, y: size.height / 2 - 40)
-        }
-    }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard isGameOver, let touch = touches.first else {
-            super.touchesBegan(touches, with: event)
-            return
-        }
-        
-        let location = touch.location(in: self)
-        let touchedNode = atPoint(location)
-        
-        if touchedNode.name == "restartButton" || touchedNode.parent?.name == "restartButton" {
-            restartGame()
-        }
+        let gameOverScene = GameOverScene(size: size)
+        let transition = SKTransition.fade(withDuration: 0.5)
+        view?.presentScene(gameOverScene, transition: transition)
     }
 }
 
 // MARK: - Map Delegate
 extension GameScene: MapDelegate {
-    func mapAltarWasDestroyed(_ map: Map) {
+    func gameOver() {
         showGameOver()
     }
 }
