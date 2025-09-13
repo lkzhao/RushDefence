@@ -17,6 +17,7 @@ class GameScene: SKScene {
     private var pinchAnchorLocal: CGPoint = .zero
     private var goldLabel: SKLabelNode!
     private var iconButtonRow: IconButtonRow!
+    private var restartButton: SKShapeNode!
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -44,6 +45,9 @@ class GameScene: SKScene {
         
         // Setup gold display UI
         setupGoldDisplay()
+        
+        // Setup restart button UI
+        setupRestartButton()
         
         // Setup icon buttons UI
         setupIconButtonRow()
@@ -115,6 +119,15 @@ extension GameScene {
         guard let view = self.view else { return }
         let tapLocation = recognizer.location(in: view)
         let scenePoint = convertPoint(fromView: tapLocation)
+        
+        // Check if restart button was tapped
+        let touchedNode = atPoint(scenePoint)
+        if touchedNode.name == "restartButton" || touchedNode.parent?.name == "restartButton" {
+            restartGame()
+            return
+        }
+        
+        // Otherwise handle turret placement
         let mapPoint = map.node.convert(scenePoint, from: self)
         attemptTurretPlacement(at: mapPoint)
     }
@@ -205,6 +218,30 @@ private extension GameScene {
     }
 }
 
+// MARK: - Restart Button
+private extension GameScene {
+    func setupRestartButton() {
+        restartButton = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 60, height: 30), cornerRadius: 6)
+        restartButton.fillColor = .systemBlue
+        restartButton.strokeColor = .white
+        restartButton.lineWidth = 1
+        restartButton.position = CGPoint(x: 20, y: size.height - 50)
+        restartButton.name = "restartButton"
+        restartButton.zPosition = 1000
+        
+        let restartLabel = SKLabelNode(fontNamed: "Arial-Bold")
+        restartLabel.text = "RESTART"
+        restartLabel.fontSize = 12
+        restartLabel.fontColor = .white
+        restartLabel.position = CGPoint(x: 30, y: 10)
+        restartLabel.horizontalAlignmentMode = .center
+        restartLabel.verticalAlignmentMode = .center
+        restartButton.addChild(restartLabel)
+        
+        addChild(restartButton)
+    }
+}
+
 // MARK: - Update
 extension GameScene {
     override func update(_ currentTime: TimeInterval) {
@@ -223,6 +260,7 @@ extension GameScene {
         updateZoomLimits()
         goldLabel?.position = CGPoint(x: size.width - 20, y: size.height - 20)
         iconButtonRow?.position = CGPoint(x: size.width / 2, y: 60)
+        restartButton?.position = CGPoint(x: 20, y: size.height - 50)
     }
 }
 
@@ -262,6 +300,12 @@ extension GameScene {
         let gameOverScene = GameOverScene(size: size)
         let transition = SKTransition.fade(withDuration: 0.5)
         view?.presentScene(gameOverScene, transition: transition)
+    }
+    
+    func restartGame() {
+        let newGameScene = GameScene(size: size)
+        let transition = SKTransition.fade(withDuration: 0.3)
+        view?.presentScene(newGameScene, transition: transition)
     }
 }
 
