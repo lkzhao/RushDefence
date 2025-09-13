@@ -59,9 +59,17 @@ extension GameScene {
         let panGR = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         panGR.minimumNumberOfTouches = 1
         panGR.maximumNumberOfTouches = 2
-        panGR.allowedScrollTypesMask = .all
+        panGR.allowedScrollTypesMask = .continuous // Only handle continuous scrolling (touch), not discrete (mouse wheel)
         panGR.delegate = self
         view.addGestureRecognizer(panGR)
+        
+        // Add separate pan gesture recognizer specifically for mouse scroll wheel events
+        let scrollGR = UIPanGestureRecognizer(target: self, action: #selector(handleScroll(_:)))
+        scrollGR.minimumNumberOfTouches = 0
+        scrollGR.maximumNumberOfTouches = 0
+        scrollGR.allowedScrollTypesMask = .discrete // Only handle discrete scrolling (mouse wheel)
+        scrollGR.delegate = self
+        view.addGestureRecognizer(scrollGR)
         let tapGR = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
         tapGR.numberOfTapsRequired = 1
         tapGR.delegate = self
@@ -108,6 +116,35 @@ extension GameScene {
             clampMapPosition()
         default:
             break
+        }
+    }
+    
+    @objc private func handleScroll(_ recognizer: UIPanGestureRecognizer) {
+        guard let view = self.view else { return }
+        
+        // Handle mouse scroll wheel events as zoom
+        if recognizer.state == .changed {
+            let translation = recognizer.translation(in: view)
+            let scrollDelta = -translation.y // Invert Y axis for natural zoom direction
+            let zoomSensitivity: CGFloat = 0.005 // Adjust sensitivity as needed
+            let zoomFactor = 1.0 + (scrollDelta * zoomSensitivity)
+            
+            // Get the mouse location for zoom anchor
+            let mouseLocation = recognizer.location(in: view)
+            let scenePoint = convertPoint(fromView: mouseLocation)
+            let localPoint = map.node.convert(scenePoint, from: self)
+            
+            // Apply zoom
+            let newZoom = map.zoom * zoomFactor
+            map.setZoom(newZoom)
+            
+            // Adjust position to keep zoom centered on mouse cursor
+            let newScenePoint = map.node.convert(localPoint, to: self)
+            let delta = scenePoint - newScenePoint
+            map.node.position += delta
+            clampMapPosition()
+            
+            recognizer.setTranslation(.zero, in: view)
         }
     }
 
