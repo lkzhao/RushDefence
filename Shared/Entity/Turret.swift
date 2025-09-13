@@ -8,12 +8,15 @@
 class Turret: Entity {
     static let cost = 100
     override var gridSize: GridSize { GridSize(w: 1, h: 1) }
-    override init() {
+    let turretType: String
+    
+    init(turretType: String = "1") {
+        self.turretType = turretType
         super.init()
         entityType = [.building, .ally]
         collisionRadius = 20
         addComponent(HealthComponent(maxHealth: 200))
-        addComponent(TurretVisualComponent())
+        addComponent(TurretVisualComponent(turretType: turretType))
         addComponent(AttackComponent().then({ component in
             component.attackRange = 120
             component.attackDamage = 30

@@ -164,6 +164,15 @@ extension GameScene {
             return
         }
         
+        // Check if an icon button was tapped
+        if let nodeName = touchedNode.name, nodeName.hasPrefix("iconButton_") {
+            let buttonIndexString = String(nodeName.dropFirst("iconButton_".count))
+            if let buttonIndex = Int(buttonIndexString) {
+                iconButtonRow.selectButton(index: buttonIndex)
+                return
+            }
+        }
+        
         // Otherwise handle turret placement
         let mapPoint = map.node.convert(scenePoint, from: self)
         attemptTurretPlacement(at: mapPoint)
@@ -304,9 +313,15 @@ extension GameScene {
 // MARK: - Turret Placement
 private extension GameScene {
     func attemptTurretPlacement(at point: CGPoint) {
+        // Check if a turret type is selected
+        guard let selectedTurretType = iconButtonRow.getSelectedTurretType() else {
+            print("No turret type selected")
+            return
+        }
+        
         let gridLocation = map.grid(for: point)
         let turretCost = Turret.cost
-        let turretSize = GridSize(w: 2, h: 2)
+        let turretSize = GridSize(w: 1, h: 1) // Updated to match turret gridSize
         let placementRect = GridRect(origin: gridLocation, size: turretSize)
         
         // Check if placement is valid
@@ -317,8 +332,8 @@ private extension GameScene {
             return
         }
         
-        // Create and place turret
-        let turret = Turret()
+        // Create and place turret with selected type
+        let turret = Turret(turretType: selectedTurretType)
         guard map.placeBuilding(turret, at: gridLocation) else {
             print("Failed to place turret")
             return
@@ -327,7 +342,7 @@ private extension GameScene {
         // Deduct cost and spawn visual
         map.resourceManager.spendGold(turretCost)
         turret.visualComponent?.spawn()
-        print("Turret placed at \(gridLocation) for \(turretCost) gold")
+        print("Turret type \(selectedTurretType) placed at \(gridLocation) for \(turretCost) gold")
     }
 }
 
