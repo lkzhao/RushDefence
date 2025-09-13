@@ -31,11 +31,10 @@ class PortalSpawnEnemyComponent: Component {
 
     private func spawnEnemy() {
         guard let map = entity?.map else { return }
+        guard let altar = map.entities.compactMap({ $0 as? Altar }).first else { return }
         let enemy = enemyFactory()
         enemy.moveComponent?.position = entity?.node.position ?? .zero
-        if let altar = map.entities.compactMap({ $0 as? Altar }).first {
-            enemy.moveComponent?.target = altar.node.position
-        }
+        enemy.moveComponent?.target = altar.node.position
         map.addEntity(enemy)
     }
 }
