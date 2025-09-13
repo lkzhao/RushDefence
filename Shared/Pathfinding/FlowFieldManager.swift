@@ -13,7 +13,7 @@ class FlowFieldManager {
     private var obstacleVersion: Int = 0
     private var cachedObstacles: [GridRect] = []
     
-    init(map: Map) {
+    init(map: Map? = nil) {
         self.map = map
     }
     
