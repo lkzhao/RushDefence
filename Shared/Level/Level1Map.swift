@@ -22,16 +22,33 @@ class Level1Map: Map {
         _ = placeBuilding(turret, at: GridLocation(x: 24, y: 16))
         _ = placeBuilding(goldMine, at: GridLocation(x: 40, y: 14))
 
-        // Spawn visuals and attach spawner after a brief delay
+        // Spawn visuals and attach wave spawner after a brief delay
         let wait = SKAction.wait(forDuration: 2.0)
         let doSpawn = SKAction.run { [weak self] in
             guard let self = self else { return }
             self.portal.visualComponent?.spawn()
             self.altar.visualComponent?.spawn()
             self.goldMine.visualComponent?.spawn()
-            self.portal.addComponent(PortalSpawnEnemyComponent(spawnInterval: 1, enemyFactory: { Bear() }))
+            
+            let waveSpawnComponent = WaveSpawnComponent(waveConfiguration: .level1)
+            waveSpawnComponent.delegate = self
+            self.portal.addComponent(waveSpawnComponent)
             self.goldMine.addComponent(GoldGenerationComponent())
         }
         node.run(.sequence([wait, doSpawn]))
+    }
+}
+
+// MARK: - WaveSpawnDelegate
+extension Level1Map: WaveSpawnDelegate {
+    func waveCompleted(waveNumber: Int) {
+        print("Wave \(waveNumber) completed!")
+        // Here you could trigger UI updates, sound effects, or other game events
+    }
+    
+    func allWavesCompleted() {
+        print("All waves completed! Level 1 finished!")
+        // Here you could trigger level completion logic, victory screen, etc.
+        delegate?.gameOver()
     }
 }
