@@ -10,6 +10,8 @@ import Foundation
 class ProjectileAttackComponent: AttackComponent {
     var projectileSpeed: CGFloat = 400
     var projectileMaxDistance: CGFloat = 1000
+    var projectileTexture: String = "Projectiles/5"
+    var explosionTexture: String = "Effects/4_1"
 
     override init() {
         super.init()
@@ -29,7 +31,9 @@ class ProjectileAttackComponent: AttackComponent {
                                     damage: attackDamage,
                                     knockback: knockback,
                                     direction: dir,
-                                    ownerType: entity.entityType)
+                                    ownerType: entity.entityType,
+                                    projectileTexture: projectileTexture,
+                                    explosionTexture: explosionTexture)
         projectile.moveComponent?.position = origin
         entity.map?.addEntity(projectile)
         lastAttackTime = lastTryAttackTime

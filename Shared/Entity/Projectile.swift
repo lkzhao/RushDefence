@@ -8,8 +8,8 @@ import SpriteKit
 class Projectile: Entity {
     let projectileComponent: ProjectileComponent
 
-    init(speed: CGFloat, maxDistance: CGFloat, damage: Int, knockback: CGFloat, direction: CGPoint, ownerType: EntityType) {
-        self.projectileComponent = ProjectileComponent(speed: speed, damage: damage, knockback: knockback, ownerType: ownerType)
+    init(speed: CGFloat, maxDistance: CGFloat, damage: Int, knockback: CGFloat, direction: CGPoint, ownerType: EntityType, projectileTexture: String = "Projectiles/5", explosionTexture: String = "Effects/4_1") {
+        self.projectileComponent = ProjectileComponent(speed: speed, damage: damage, knockback: knockback, ownerType: ownerType, explosionTexture: explosionTexture)
         super.init()
         entityType = [.projectile]
         collisionRadius = 4
@@ -23,7 +23,7 @@ class Projectile: Entity {
 
         projectileComponent.maxDistance = maxDistance
         addComponent(projectileComponent)
-        addComponent(SpriteComponent(textureName: "Projectiles/5", autoRotateWithVelocity: true))
-        addComponent(TrailComponent(textureName: "Projectiles/5"))
+        addComponent(SpriteComponent(textureName: projectileTexture, autoRotateWithVelocity: true))
+        addComponent(TrailComponent(textureName: projectileTexture))
     }
 }
