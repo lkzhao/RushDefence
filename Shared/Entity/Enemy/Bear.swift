@@ -12,11 +12,12 @@ class Bear: Entity {
         super.init()
         entityType = [.enemy]
 
-        // Set up movement with RouteSeekBehavior for pathfinding
+        // Set up movement with RouteSeekBehavior for pathfinding, wrapped with pause-when-attacking
         let routeSeek = RouteSeekBehavior()
+        let pauseWhenAttacking = PauseWhenAttackingSteeringBehavior(wrapping: routeSeek)
         addComponent(MoveComponent().then({
             $0.speed = 40
-            $0.behaviors = [routeSeek, AvoidBehavior()]
+            $0.behaviors = [pauseWhenAttacking, AvoidBehavior()]
         }))
 
         addComponent(HealthComponent(maxHealth: 100))
