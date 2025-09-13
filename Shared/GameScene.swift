@@ -17,6 +17,7 @@ class GameScene: SKScene {
     private var pinchAnchorScene: CGPoint = .zero
     private var pinchAnchorLocal: CGPoint = .zero
     private var goldLabel: SKLabelNode!
+    private var iconButtonRow: IconButtonRow!
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -43,6 +44,9 @@ class GameScene: SKScene {
         
         // Setup gold display UI
         setupGoldDisplay()
+        
+        // Setup icon buttons UI
+        setupIconButtonRow()
     }
 }
 
@@ -191,6 +195,16 @@ private extension GameScene {
     }
 }
 
+// MARK: - Icon Buttons
+private extension GameScene {
+    func setupIconButtonRow() {
+        iconButtonRow = IconButtonRow()
+        iconButtonRow.position = CGPoint(x: size.width / 2, y: 60)
+        iconButtonRow.zPosition = 1000
+        addChild(iconButtonRow)
+    }
+}
+
 // MARK: - Update
 extension GameScene {
     override func update(_ currentTime: TimeInterval) {
@@ -208,6 +222,7 @@ extension GameScene {
         super.didChangeSize(oldSize)
         updateZoomLimits()
         goldLabel?.position = CGPoint(x: size.width - 20, y: size.height - 20)
+        iconButtonRow?.position = CGPoint(x: size.width / 2, y: 60)
     }
 }
 
