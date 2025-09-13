@@ -7,7 +7,7 @@
 
 import Testing
 import CoreGraphics
-@testable import RushDefense_iOS
+@testable import RushDefense
 
 struct FlowFieldPathfindingTests {
 
@@ -146,22 +146,22 @@ struct FlowFieldPathfindingTests {
         _ = map.placeBuilding(building, at: GridLocation(x: 5, y: 4))
         
         // Create enemy with RouteSeekBehavior
-        let enemy = Enemy()
+        let enemy = Bear()
         map.addEntity(enemy)
         enemy.moveComponent?.position = CGPoint(x: -100, y: 0) // Left side of map
-        
-        // Set up route seeking behavior
-        let routeSeek = enemy.routeSeekBehavior
-        #expect(routeSeek != nil, "Enemy should have RouteSeekBehavior")
-        
-        routeSeek?.targetLocation = GridLocation(x: 8, y: 4) // Right side, past the building
-        
+
         // Test that behavior produces steering force
         guard let moveComponent = enemy.moveComponent else {
             Issue.record("Enemy should have MoveComponent")
             return
         }
-        
+
+        // Set up route seeking behavior
+        let routeSeek = enemy.moveComponent?.routeSeekBehavior
+        #expect(routeSeek != nil, "Enemy should have RouteSeekBehavior")
+
+        routeSeek?.targetLocation = GridLocation(x: 8, y: 4) // Right side, past the building
+
         let force = routeSeek?.computeForce(for: moveComponent, dt: 0.016)
         #expect(force != nil, "Should produce steering force")
         #expect(force!.length > 0, "Steering force should not be zero")
@@ -203,13 +203,13 @@ struct FlowFieldPathfindingTests {
         _ = map.placeBuilding(goldMine, at: GridLocation(x: 12, y: 7))  // Obstacle 3
         
         // Create enemy at spawn point
-        let enemy = Enemy()
+        let enemy = Bear()
         map.addEntity(enemy)
         enemy.moveComponent?.position = CGPoint(x: -200, y: 0) // Far left
         
         // Set up pathfinding target
         let altarLocation = map.grid(for: altar.node.position)
-        enemy.routeSeekBehavior?.targetLocation = altarLocation
+        enemy.moveComponent?.routeSeekBehavior?.targetLocation = altarLocation
         
         // Simulate movement for several frames
         var position = enemy.moveComponent?.position ?? .zero
