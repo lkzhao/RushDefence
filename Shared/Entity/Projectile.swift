@@ -26,8 +26,4 @@ class Projectile: Entity {
         addComponent(SpriteComponent(textureName: "Projectiles/5", autoRotateWithVelocity: true))
         addComponent(TrailComponent(textureName: "Projectiles/5"))
     }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }

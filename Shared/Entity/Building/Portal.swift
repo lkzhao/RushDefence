@@ -15,8 +15,5 @@ class Portal: Entity {
                                               spawnTexture: "Objects/Portal1_Start"))
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
 }

@@ -29,7 +29,7 @@ class Level1Map: Map {
             self.portal.visualComponent?.spawn()
             self.altar.visualComponent?.spawn()
             self.goldMine.visualComponent?.spawn()
-            self.portal.addComponent(PortalSpawnEnemyComponent(spawnInterval: 1, enemyFactory: { Enemy() }))
+            self.portal.addComponent(PortalSpawnEnemyComponent(spawnInterval: 1, enemyFactory: { Bear() }))
             self.goldMine.addComponent(GoldGenerationComponent())
         }
         node.run(.sequence([wait, doSpawn]))

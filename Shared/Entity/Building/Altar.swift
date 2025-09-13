@@ -16,9 +16,4 @@ class Altar: Entity {
         addComponent(IdleSpawnVisualComponent(idleTexture: "Objects/Altar_Idle", spawnTexture: "Objects/Altar_Start"))
         visualComponent?.sprite.anchorPoint = CGPoint(x: 0.5, y: 0.3)
     }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
 }

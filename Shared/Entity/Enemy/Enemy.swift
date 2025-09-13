@@ -6,7 +6,6 @@
 //
 
 class Enemy: Entity {
-
     override init() {
         super.init()
         entityType = [.enemy]
@@ -26,13 +25,5 @@ class Enemy: Entity {
             component.attackDamage = 2
             component.targetEntityType = [.building]
         }))
-    }
-    
-    var routeSeekBehavior: RouteSeekBehavior? {
-        return moveComponent?.behaviors.compactMap { $0 as? RouteSeekBehavior }.first
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

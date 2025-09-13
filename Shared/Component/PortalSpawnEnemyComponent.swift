@@ -16,9 +16,6 @@ class PortalSpawnEnemyComponent: Component {
         super.init()
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
@@ -37,7 +34,7 @@ class PortalSpawnEnemyComponent: Component {
         
         // Set up pathfinding target for RouteSeekBehavior
         let altarGridLocation = map.grid(for: altar.node.position)
-        if let routeSeek = (enemy as? Enemy)?.routeSeekBehavior {
+        if let routeSeek = enemy.moveComponent?.routeSeekBehavior {
             routeSeek.targetLocation = altarGridLocation
         }
         

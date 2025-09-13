@@ -11,7 +11,8 @@ class AttackComponent: Component {
     var attackRange: CGFloat = 150
     var attackDamage: Int = 50
     var attackInterval: TimeInterval = 0.5
-    var lastAttackTime: TimeInterval = 0
+    var lastTryAttackTime: TimeInterval = 0
+    var lastAttackTime: TimeInterval = -.infinity
     // What types of entities this component can target. Defaults to enemies.
     var targetEntityType: EntityType = [.enemy]
     var target: Entity?
@@ -21,9 +22,8 @@ class AttackComponent: Component {
 
     override func update(deltaTime seconds: TimeInterval) {
         super.update(deltaTime: seconds)
-        lastAttackTime += seconds
-        if lastAttackTime >= attackInterval {
-            lastAttackTime = 0
+        if lastUpdateTime - lastTryAttackTime >= attackInterval {
+            lastTryAttackTime = lastUpdateTime
             performAttack()
         }
     }
@@ -72,6 +72,7 @@ class AttackComponent: Component {
                                         ownerType: entity.entityType)
             projectile.moveComponent?.position = origin
             entity.map?.addEntity(projectile)
+            lastAttackTime = lastTryAttackTime
         }
     }
 }

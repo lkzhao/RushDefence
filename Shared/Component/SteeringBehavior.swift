@@ -121,3 +121,9 @@ class RouteSeekBehavior: SteeringBehavior {
         return normalizedDirection * component.movementForce
     }
 }
+
+extension MoveComponent {
+    var routeSeekBehavior: RouteSeekBehavior? {
+        behaviors.lazy.compactMap { $0 as? RouteSeekBehavior }.first
+    }
+}

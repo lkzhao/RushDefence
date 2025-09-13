@@ -31,7 +31,7 @@ class ProjectileComponent: Component {
             let pos = entity.node.position
             let v = entity.moveComponent?.velocity ?? .zero
             let dir = v.length > 0 ? v.normalized() : CGPoint(x: 1, y: 0)
-            let effectNode = EffectNode(position: pos, direction: dir)
+            let effectNode = EffectNode(position: pos, direction: dir, textureName: "Effects/4_1", anchorPoint: CGPoint(x: 0.0, y: 0.5))
             entity.map?.node.addChild(effectNode)
             entity.removeFromMap()
             return
@@ -62,7 +62,7 @@ class ProjectileComponent: Component {
                 other.moveComponent?.applyImpulse(dir * knockback)
 
                 // Impact effect aligned with projectile direction at projectile's hit position
-                let effectNode = EffectNode(position: myPos, direction: dir)
+                let effectNode = EffectNode(position: myPos, direction: dir, textureName: "Effects/4_1", anchorPoint: CGPoint(x: 0.0, y: 0.5))
                 entity.map?.node.addChild(effectNode)
                 entity.removeFromMap()
                 break
