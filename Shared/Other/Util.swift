@@ -52,3 +52,4 @@ extension SIMD2<Float> {
         CGPoint(x: CGFloat(x), y: CGFloat(y))
     }
 }
+

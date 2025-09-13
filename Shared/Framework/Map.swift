@@ -5,6 +5,11 @@
 
 import SpriteKit
 
+// MARK: - Map Delegate
+protocol MapDelegate: AnyObject {
+    func gameOver()
+}
+
 // MARK: - Grid Types
 struct GridLocation: Hashable { let x: Int; let y: Int }
 struct GridSize: Equatable { let w: Int; let h: Int }
@@ -60,6 +65,8 @@ class Map {
     let rows: Int
     let cellSize: CGSize
     let resourceManager = ResourceManager()
+    
+    weak var delegate: MapDelegate?
 
     private(set) var entities: [Entity] = []
     private var occupied: [GridLocation: Entity] = [:]
@@ -100,6 +107,12 @@ class Map {
     func removeEntity(_ entity: Entity) {
         if let idx = entities.firstIndex(where: { $0 === entity }) {
             let removed = entities.remove(at: idx)
+            
+            // Check if this is an Altar being removed - triggers game over
+            if removed is Altar {
+                delegate?.gameOver()
+            }
+            
             removed.willRemoveFromMap(self)
             removed.node.removeFromParent()
             removed.map = nil

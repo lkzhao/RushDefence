@@ -7,7 +7,6 @@
 
 import SpriteKit
 import UIKit
-import BaseToolbox
 
 class GameScene: SKScene {
     var map: Level1Map!
@@ -34,6 +33,7 @@ class GameScene: SKScene {
 
         // Create Level1Map and add its node (Level1Map places buildings and spawners)
         map = Level1Map()
+        map.delegate = self
         map.node.position = CGPoint(x: size.width / 2, y: size.height / 2)
         addChild(map.node)
         updateZoomLimits()
@@ -253,6 +253,22 @@ private extension GameScene {
         map.resourceManager.spendGold(turretCost)
         turret.visualComponent?.spawn()
         print("Turret placed at \(gridLocation) for \(turretCost) gold")
+    }
+}
+
+// MARK: - Game Over
+extension GameScene {
+    func showGameOver() {
+        let gameOverScene = GameOverScene(size: size)
+        let transition = SKTransition.fade(withDuration: 0.5)
+        view?.presentScene(gameOverScene, transition: transition)
+    }
+}
+
+// MARK: - Map Delegate
+extension GameScene: MapDelegate {
+    func gameOver() {
+        showGameOver()
     }
 }
 
