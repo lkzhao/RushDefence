@@ -11,8 +11,10 @@ import SpriteKit
 
 class TurretVisualComponent: VisualComponent {
     private var lastTargetDirection: CGPoint = CGPoint(x: 0, y: -1) // Default facing south
+    private let turretType: String
     
-    override init() {
+    init(turretType: String = "1") {
+        self.turretType = turretType
         super.init()
         // Start with frame 1 (south-facing)
         updateTexture(for: lastTargetDirection)
@@ -40,7 +42,7 @@ class TurretVisualComponent: VisualComponent {
     
     private func updateTexture(for direction: CGPoint) {
         let angle = (direction.angle + .pi / 2).wrapAngle
-        let textures = TextureCache.shared.textures(for: "Weapons/1")
+        let textures = TextureCache.shared.textures(for: "Weapons/\(turretType)")
         var textureIndex = Int(angle / (CGFloat.pi / 8))
         if textureIndex > 8 {
             textureIndex = 8 - (textureIndex - 8)
