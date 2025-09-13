@@ -122,6 +122,32 @@ class RouteSeekBehavior: SteeringBehavior {
     }
 }
 
+/// Pauses movement when the entity is actively attacking a target.
+/// Wraps another steering behavior and returns zero force when attacking.
+class PauseWhenAttackingSteeringBehavior: SteeringBehavior {
+    let wrappedBehavior: SteeringBehavior
+    
+    init(wrapping behavior: SteeringBehavior) {
+        self.wrappedBehavior = behavior
+    }
+    
+    func computeForce(for component: MoveComponent, dt: CGFloat) -> CGPoint {
+        guard let entity = component.entity,
+              let attackComponent = entity.component(ofType: AttackComponent.self) else {
+            // No attack component, delegate to wrapped behavior
+            return wrappedBehavior.computeForce(for: component, dt: dt)
+        }
+        
+        // If we have a target, pause movement (AttackComponent handles target validation)
+        if attackComponent.target != nil {
+            return .zero
+        }
+        
+        // Not attacking, delegate to wrapped behavior
+        return wrappedBehavior.computeForce(for: component, dt: dt)
+    }
+}
+
 extension MoveComponent {
     var routeSeekBehavior: RouteSeekBehavior? {
         behaviors.lazy.compactMap { $0 as? RouteSeekBehavior }.first
