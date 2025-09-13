@@ -59,6 +59,7 @@ class Map {
     let columns: Int
     let rows: Int
     let cellSize: CGSize
+    let resourceManager = ResourceManager()
 
     private(set) var entities: [Entity] = []
     private var occupied: [GridLocation: Entity] = [:]
