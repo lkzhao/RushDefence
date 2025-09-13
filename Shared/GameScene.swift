@@ -16,6 +16,7 @@ class GameScene: SKScene {
     private var lastPanLocation: CGPoint?
     private var pinchAnchorScene: CGPoint = .zero
     private var pinchAnchorLocal: CGPoint = .zero
+    private var goldLabel: SKLabelNode!
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -39,6 +40,9 @@ class GameScene: SKScene {
         let mapSize = map.pointSize
         let aspectFill = max(sceneSize.width / mapSize.width, sceneSize.height / mapSize.height)
         map.setZoom(aspectFill)
+        
+        // Setup gold display UI
+        setupGoldDisplay()
     }
 }
 
@@ -152,12 +156,32 @@ private extension GameScene {
     }
 }
 
+// MARK: - Gold Display
+private extension GameScene {
+    func setupGoldDisplay() {
+        goldLabel = SKLabelNode(fontNamed: "Arial-Bold")
+        goldLabel.fontSize = 24
+        goldLabel.fontColor = .yellow
+        goldLabel.text = "Gold: 0"
+        goldLabel.horizontalAlignmentMode = .right
+        goldLabel.verticalAlignmentMode = .top
+        goldLabel.position = CGPoint(x: size.width - 20, y: size.height - 20)
+        goldLabel.zPosition = 1000
+        addChild(goldLabel)
+    }
+    
+    func updateGoldDisplay() {
+        goldLabel.text = "Gold: \(map.resourceManager.currentGold)"
+    }
+}
+
 // MARK: - Update
 extension GameScene {
     override func update(_ currentTime: TimeInterval) {
         if lastUpdateTime == 0 { lastUpdateTime = currentTime }
         let dt = currentTime - lastUpdateTime
         map.update(deltaTime: dt)
+        updateGoldDisplay()
         lastUpdateTime = currentTime
     }
 }
@@ -167,6 +191,7 @@ extension GameScene {
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
         updateZoomLimits()
+        goldLabel?.position = CGPoint(x: size.width - 20, y: size.height - 20)
     }
 }
 
