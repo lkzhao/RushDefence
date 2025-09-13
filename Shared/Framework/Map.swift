@@ -71,7 +71,7 @@ class Map {
 
     private(set) var entities: [Entity] = []
     private var occupied: [GridLocation: Entity] = [:]
-    private var buildingRects: [Entity: GridRect] = []
+    private var buildingRects: [ObjectIdentifier: GridRect] = [:]
 
     private(set) var zoom: CGFloat = 1.0 {
         didSet {
@@ -206,12 +206,12 @@ class Map {
     }
     
     private func addBuildingObstacle(_ entity: Entity, rect: GridRect) {
-        buildingRects[entity] = rect
+        buildingRects[ObjectIdentifier(entity)] = rect
         flowFieldManager.invalidateFlowFields()
     }
     
     private func removeBuildingObstacle(_ entity: Entity) {
-        if buildingRects.removeValue(forKey: entity) != nil {
+        if buildingRects.removeValue(forKey: ObjectIdentifier(entity)) != nil {
             flowFieldManager.invalidateFlowFields()
         }
     }
