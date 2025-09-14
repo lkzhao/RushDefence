@@ -78,6 +78,32 @@ extension GameScene {
         tapGR.numberOfTapsRequired = 1
         tapGR.delegate = self
         view.addGestureRecognizer(tapGR)
+        
+        // Add hover gesture recognizer for grid visualization
+        let hoverGR = UIHoverGestureRecognizer(target: self, action: #selector(handleHover(_:)))
+        view.addGestureRecognizer(hoverGR)
+    }
+    
+    @objc private func handleHover(_ recognizer: UIHoverGestureRecognizer) {
+        guard let view = self.view else { return }
+        
+        switch recognizer.state {
+        case .began, .changed:
+            let hoverLocation = recognizer.location(in: view)
+            let scenePoint = convertPoint(fromView: hoverLocation)
+            map.setGridVisible(true)
+            updateGridForMousePosition(scenePoint)
+        case .ended, .cancelled:
+            map.setGridVisible(false)
+        default:
+            break
+        }
+    }
+    
+    private func updateGridForMousePosition(_ scenePoint: CGPoint) {
+        // Convert scene point to map local coordinates
+        let mapPoint = map.node.convert(scenePoint, from: self)
+        map.updateGridMousePosition(mapPoint)
     }
     
     #if os(macOS)
