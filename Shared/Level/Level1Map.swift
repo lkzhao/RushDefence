@@ -11,6 +11,8 @@ class Level1Map: Map {
     let turret = Turret()
     let worker = Worker()
     let goldMine = GoldMine()
+    
+    private var waveSpawnComponent: WaveSpawnComponent?
 
     init() {
         super.init(columns: 48, rows: 32)
@@ -32,6 +34,7 @@ class Level1Map: Map {
             
             let waveSpawnComponent = WaveSpawnComponent(waveConfiguration: .level1)
             waveSpawnComponent.delegate = self
+            self.waveSpawnComponent = waveSpawnComponent
             self.portal.addComponent(waveSpawnComponent)
             self.goldMine.addComponent(GoldGenerationComponent())
         }
@@ -51,4 +54,10 @@ extension Level1Map: WaveSpawnDelegate {
         // Here you could trigger level completion logic, victory screen, etc.
         delegate?.gameOver()
     }
+    
+    // MARK: - Wave Info Access
+    var currentWave: Int { waveSpawnComponent?.currentWave ?? 1 }
+    var totalWaves: Int { waveSpawnComponent?.totalWaves ?? 20 }
+    var isWaveInProgress: Bool { waveSpawnComponent?.isWaveInProgress ?? false }
+    var timeUntilNextWave: TimeInterval { waveSpawnComponent?.timeUntilNextWave ?? 0 }
 }
