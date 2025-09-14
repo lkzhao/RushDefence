@@ -66,6 +66,7 @@ class Map {
     let cellSize: CGSize
     let resourceManager = ResourceManager()
     let flowFieldManager: FlowFieldManager
+    private let gridShaderNode: GridShaderNode
     
     weak var delegate: MapDelegate?
 
@@ -94,8 +95,20 @@ class Map {
         self.terrain = BaseTerrain(columns: columns, rows: rows)
         self.cellSize = terrain.tileSize
         self.flowFieldManager = FlowFieldManager(map: nil)
+        
+        // Create grid shader node with the map size
+        let mapSize = CGSize(width: CGFloat(columns) * cellSize.width, height: CGFloat(rows) * cellSize.height)
+        self.gridShaderNode = GridShaderNode(mapSize: mapSize)
+        
+        // Set z-positions and add children
         terrain.zPosition = -1
+        gridShaderNode.zPosition = 0.5  // Above terrain, below entities
         node.addChild(terrain)
+        node.addChild(gridShaderNode)
+        
+        // Initially hide the grid
+        gridShaderNode.setGridVisible(false)
+        
         flowFieldManager.map = self
     }
 
@@ -214,5 +227,19 @@ class Map {
         if buildingRects.removeValue(forKey: ObjectIdentifier(entity)) != nil {
             flowFieldManager.invalidateFlowFields()
         }
+    }
+    
+    // MARK: - Grid Shader Management
+    
+    /// Updates the grid shader with the current mouse position
+    /// - Parameter position: Mouse position in map local coordinates
+    func updateGridMousePosition(_ position: CGPoint) {
+        gridShaderNode.updateMousePosition(position)
+    }
+    
+    /// Sets the visibility of the grid effect
+    /// - Parameter visible: Whether the grid should be visible
+    func setGridVisible(_ visible: Bool) {
+        gridShaderNode.setGridVisible(visible)
     }
 }
