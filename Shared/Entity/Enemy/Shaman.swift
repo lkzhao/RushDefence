@@ -29,8 +29,8 @@ class Shaman: Entity {
             component.targetEntityType = [.building, .ally, .worker]
             component.projectileSpeed = 350
             component.projectileMaxDistance = 200
-            component.projectileTexture = "Enemies/Shaman/Shaman_Projectile"
-            component.explosionTexture = "Enemies/Shaman/Shaman_Explosion"
+            component.projectileTexture = "Enemies/Shaman_Projectile"
+            component.explosionTexture = "Enemies/Shaman_Explosion"
         }))
     }
 }

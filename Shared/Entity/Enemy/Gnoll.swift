@@ -29,8 +29,8 @@ class Gnoll: Entity {
             component.targetEntityType = [.building, .ally, .worker]
             component.projectileSpeed = 300
             component.projectileMaxDistance = 170
-            component.projectileTexture = "Enemies/Gnoll/Gnoll_Bone"
-            component.explosionTexture = "Enemies/Gnoll/Gnoll_Hit"
+            component.projectileTexture = "Enemies/Gnoll_Bone"
+            component.explosionTexture = "Enemies/Gnoll_Hit"
         }))
     }
 }
