@@ -49,7 +49,17 @@ class IdleAttackRunVisualComponent: VisualComponent {
         guard let attackComponent = entity?.component(ofType: AttackComponent.self) else { return }
         state = attackComponent.lastAttackTime + 1.0 > lastUpdateTime ? .attack : (moveComponent.isMoving ? .run : .idle)
         let frames = state.textures(for: texturePrefix)
-        sprite.xScale = moveComponent.direction.x < 0 ? -1 : 1
+        
+        // When attacking, face the target. Otherwise, face movement direction.
+        if state == .attack, let target = attackComponent.target {
+            let entityPosition = entity?.node.position ?? .zero
+            let targetPosition = target.node.position
+            let targetDirection = (targetPosition - entityPosition).normalized()
+            sprite.xScale = targetDirection.x < 0 ? -1 : 1
+        } else {
+            sprite.xScale = moveComponent.direction.x < 0 ? -1 : 1
+        }
+        
         if lastUpdateTime > lastTextureUpdateTime + timePerFrame {
             lastTextureUpdateTime = lastUpdateTime
             textureIndex += 1
