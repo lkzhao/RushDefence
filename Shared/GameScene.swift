@@ -109,29 +109,6 @@ extension GameScene {
         let mapPoint = map.node.convert(scenePoint, from: self)
         map.updateGridMousePosition(mapPoint)
     }
-    
-    #if os(macOS)
-    override func mouseMoved(with event: NSEvent) {
-        let location = event.location(in: self)
-        updateGridForMousePosition(location)
-    }
-    
-    override func mouseEntered(with event: NSEvent) {
-        let location = event.location(in: self)
-        map.setGridVisible(true)
-        updateGridForMousePosition(location)
-    }
-    
-    override func mouseExited(with event: NSEvent) {
-        map.setGridVisible(false)
-    }
-    #endif
-    
-    private func updateGridForMousePosition(_ scenePoint: CGPoint) {
-        // Convert scene point to map local coordinates
-        let mapPoint = map.node.convert(scenePoint, from: self)
-        map.updateGridMousePosition(mapPoint)
-    }
 
     @objc private func handlePinch(_ recognizer: UIPinchGestureRecognizer) {
         switch recognizer.state {
