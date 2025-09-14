@@ -12,6 +12,7 @@ class ProjectileComponent: Component {
     var ownerType: EntityType
     var maxDistance: CGFloat = 1000
     var explosionTexture: String
+    var explosionScale: CGFloat = 1.0
     private var traveled: CGFloat = 0
 
     init(speed: CGFloat, damage: Int, knockback: CGFloat, ownerType: EntityType, explosionTexture: String = "Effects/4_1") {
@@ -33,7 +34,7 @@ class ProjectileComponent: Component {
             let pos = entity.node.position
             let v = entity.moveComponent?.velocity ?? .zero
             let dir = v.length > 0 ? v.normalized() : CGPoint(x: 1, y: 0)
-            let effectNode = EffectNode(position: pos, direction: dir, textureName: explosionTexture, anchorPoint: CGPoint(x: 0.0, y: 0.5))
+            let effectNode = EffectNode(position: pos, direction: dir, textureName: explosionTexture, scale: explosionScale, anchorPoint: CGPoint(x: 0.0, y: 0.5))
             entity.map?.node.addChild(effectNode)
             entity.removeFromMap()
             return
@@ -64,7 +65,7 @@ class ProjectileComponent: Component {
                 other.moveComponent?.applyImpulse(dir * knockback)
 
                 // Impact effect aligned with projectile direction at projectile's hit position
-                let effectNode = EffectNode(position: myPos, direction: dir, textureName: explosionTexture, anchorPoint: CGPoint(x: 0.0, y: 0.5))
+                let effectNode = EffectNode(position: myPos, direction: dir, textureName: explosionTexture, scale: explosionScale, anchorPoint: CGPoint(x: 0.0, y: 0.5))
                 entity.map?.node.addChild(effectNode)
                 entity.removeFromMap()
                 break

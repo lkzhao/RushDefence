@@ -12,6 +12,8 @@ class ProjectileAttackComponent: AttackComponent {
     var projectileMaxDistance: CGFloat = 1000
     var projectileTexture: String = "Projectiles/5"
     var explosionTexture: String = "Effects/4_1"
+    var projectileScale: CGFloat = 1.0
+    var explosionScale: CGFloat = 1.0
 
     override init() {
         super.init()
@@ -33,7 +35,9 @@ class ProjectileAttackComponent: AttackComponent {
                                     direction: dir,
                                     ownerType: entity.entityType,
                                     projectileTexture: projectileTexture,
-                                    explosionTexture: explosionTexture)
+                                    explosionTexture: explosionTexture,
+                                    projectileScale: projectileScale,
+                                    explosionScale: explosionScale)
         projectile.moveComponent?.position = origin
         entity.map?.addEntity(projectile)
         lastAttackTime = lastTryAttackTime

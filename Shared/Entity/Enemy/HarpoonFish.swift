@@ -30,6 +30,8 @@ class HarpoonFish: Entity {
             component.projectileSpeed = 400 // Fast harpoon
             component.projectileMaxDistance = 220
             component.projectileTexture = "Enemies/Harpoon"
+            component.projectileScale = 0.5
+            component.explosionScale = 0.5
         }))
     }
 }

@@ -31,6 +31,8 @@ class Gnoll: Entity {
             component.projectileMaxDistance = 170
             component.projectileTexture = "Enemies/Gnoll_Bone"
             component.explosionTexture = "Enemies/Gnoll_Hit"
+            component.projectileScale = 0.5
+            component.explosionScale = 0.5
         }))
     }
 }

@@ -31,6 +31,8 @@ class Shaman: Entity {
             component.projectileMaxDistance = 200
             component.projectileTexture = "Enemies/Shaman_Projectile"
             component.explosionTexture = "Enemies/Shaman_Explosion"
+            component.projectileScale = 0.5
+            component.explosionScale = 0.5
         }))
     }
 }
