@@ -30,7 +30,15 @@ class PortalSpawnEnemyComponent: Component {
         guard let map = entity?.map else { return }
         guard let altar = map.entities.compactMap({ $0 as? Altar }).first else { return }
         let enemy = enemyFactory()
-        enemy.moveComponent?.position = entity?.node.position ?? .zero
+        
+        // Add random offset to prevent enemies from spawning in a single line
+        let basePosition = entity?.node.position ?? .zero
+        let offsetX = Float.random(in: -15...15)
+        let offsetY = Float.random(in: -15...15)
+        let spawnPosition = CGPoint(x: basePosition.x + CGFloat(offsetX), 
+                                   y: basePosition.y + CGFloat(offsetY))
+        
+        enemy.moveComponent?.position = spawnPosition
         
         // Set up pathfinding target for RouteSeekBehavior
         let altarGridLocation = map.grid(for: altar.node.position)
